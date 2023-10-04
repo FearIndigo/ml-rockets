@@ -3,10 +3,10 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace FearIndigo.Managers.Folder
+namespace FearIndigo.Managers.Editor
 {
     [CustomEditor(typeof(TrackManager), true)]
-    public class TrackManagerEditor : Editor
+    public class TrackManagerEditor : UnityEditor.Editor
     {
         public override VisualElement CreateInspectorGUI()
         {
