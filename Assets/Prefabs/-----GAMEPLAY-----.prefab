@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 152985928841919278}
   - component: {fileID: 4882036441155441276}
+  - component: {fileID: 5387897959616475993}
   m_Layer: 0
   m_Name: -----GAMEPLAY-----
   m_TagString: Untagged
@@ -44,3 +45,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee6e4a0973bafe48a0e49f41f938a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  track: {fileID: 5387897959616475993}
+--- !u!114 &5387897959616475993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2376483266832581112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2dcad38c2fc441187541801985af266, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trackBounds:
+    x: 64
+    y: 32
+  minTrackWidth: 2
+  maxTrackWidth: 10
+  randomSeed: 1057960082
+  numRandomPoints: 16
+  maxConvexHullIterations: 1000
+  maxDisplacementIterations: 1000
+  minDisplacement: 5
+  maxDisplacement: 10
+  minPointDistance: 3
+  minCornerAngle: 15
+  maxIterations: 1000
