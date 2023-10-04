@@ -30,7 +30,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1686996927878169500}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4882036441155441276
@@ -58,17 +59,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2dcad38c2fc441187541801985af266, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trackSpline: {fileID: 7263852646011388852}
   trackBounds:
     x: 64
-    y: 32
+    y: 64
   minTrackWidth: 2
   maxTrackWidth: 10
-  randomSeed: 1057960082
-  numRandomPoints: 16
+  randomSeed: 322495739
+  numRandomPoints: 12
+  maxXDisplacement: 10
+  maxYDisplacement: 15
+  minPointDistance: 5
+  maxPointDistance: 32
+  minCornerAngle: 15
+  maxIterations: 2000
   maxConvexHullIterations: 1000
   maxDisplacementIterations: 1000
-  minDisplacement: 5
-  maxDisplacement: 10
-  minPointDistance: 3
-  minCornerAngle: 15
-  maxIterations: 1000
+--- !u!1 &7153164272751625758
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1686996927878169500}
+  - component: {fileID: 7263852646011388852}
+  m_Layer: 0
+  m_Name: TrackSpline
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1686996927878169500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7153164272751625758}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 152985928841919278}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7263852646011388852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7153164272751625758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caf2f82e7e4642f98fc3bf23942a49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alpha: 0
+  resolution: 64

@@ -19,7 +19,8 @@ namespace FearIndigo.Managers.Editor
             {
                 container.Add(
                     UIHelper.Create<Button>("Randomize Seed", trackManager.RandomizeSeed),
-                    UIHelper.Create<Button>("Generate Track", trackManager.GenerateTrack)
+                    UIHelper.Create<Button>("Generate Track", trackManager.GenerateTrack),
+                    UIHelper.Create<Button>("Generate Random Track", trackManager.GenerateRandomTrack)
                 );
             }
 

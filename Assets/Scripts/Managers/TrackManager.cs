@@ -11,6 +11,23 @@ namespace FearIndigo.Managers
     [BurstCompile]
     public class TrackManager : MonoBehaviour
     {
+        public class GenerationFailedException : Exception 
+        {
+            public GenerationFailedException()
+            {
+            }
+
+            public GenerationFailedException(string message)
+                : base(message)
+            {
+            }
+
+            public GenerationFailedException(string message, Exception inner)
+                : base(message, inner)
+            {
+            }
+        }
+        
         [Header("Spline")]
         public Spline trackSpline;
 
@@ -22,13 +39,14 @@ namespace FearIndigo.Managers
         [Header("Generation")]
         public uint randomSeed;
         public int numRandomPoints;
+        public float maxXDisplacement;
+        public float maxYDisplacement;
+        public float minPointDistance;
+        public float maxPointDistance;
+        public float minCornerAngle;
+        public int maxIterations;
         public int maxConvexHullIterations;
         public int maxDisplacementIterations;
-        public float minDisplacement;
-        public float maxDisplacement;
-        public float minPointDistance;
-        public float minCornerAngle;
-        public float maxIterations;
 
         private Random _rng;
 
@@ -42,6 +60,17 @@ namespace FearIndigo.Managers
             randomSeed = (uint)UnityEngine.Random.Range(0, int.MaxValue);
         }
 
+        ///<summary>
+        /// <para>
+        /// Randomize seed before generating track
+        /// </para>
+        /// </summary>
+        public void GenerateRandomTrack()
+        {
+            RandomizeSeed();
+            GenerateTrack();
+        }
+        
         /// <summary>
         /// <para>
         /// 1) Generate a set of random points.
@@ -60,23 +89,32 @@ namespace FearIndigo.Managers
         public void GenerateTrack()
         {
             _rng = Random.CreateFromIndex(randomSeed);
-
-            NativeArray<float2> trackPoints;
-            var iteration = 0;
-            do
+            try
             {
-                iteration++;
-                if (iteration > maxIterations)
+                NativeArray<float2> points;
+                var valid = false;
+                var iteration = 0;
+                do
                 {
-                    throw new Exception("Took too long to generate valid map!");
-                }
-                var points = GenerateRandomPoints();
-                var convexHullVertices = GetConvexHullVertices(points);
-                var displacedMidpoints = GetDisplacedMidpoints(convexHullVertices);
-                trackPoints = CombineArrays(convexHullVertices, displacedMidpoints);
-            } while (!CheckConstraints(trackPoints));
-            
-            UpdateSplineFromPoints(trackPoints);
+                    iteration++;
+                    if (iteration > maxIterations)
+                    {
+                        throw new GenerationFailedException("Took too long to generate valid map!");
+                    }
+
+                    points = GenerateRandomPoints();
+                    points = GetConvexHullVertices(points);
+                    if (CheckConstraints(points)) continue;
+                    points = GetDisplacedMidpoints(points);
+                    valid = CheckConstraints(points);
+                } while (!valid);
+                
+                UpdateSplineFromPoints(points);
+            }
+            catch(GenerationFailedException e)
+            {
+                Debug.LogError(e.Message);
+            }
         }
 
         /// <summary>
@@ -105,7 +143,7 @@ namespace FearIndigo.Managers
         [BurstCompile]
         private NativeArray<float2> GetConvexHullVertices(NativeArray<float2> points)
         {
-            var vertices = new NativeArray<float2>(points.Length, Allocator.Temp);
+            var vertices = new NativeArray<float2>(points.Length + 1, Allocator.Temp);
             var lowestYIndex = GetLowestYIndex(points);
             vertices[0] = points[lowestYIndex];
             var verticesCount = 1;
@@ -118,7 +156,7 @@ namespace FearIndigo.Managers
                 iteration++;
                 if (iteration > maxConvexHullIterations)
                 {
-                    throw new Exception("Took too many iterations to find convex hull!");
+                    throw new GenerationFailedException("Took too many iterations to find convex hull!");
                 }
                 var nextTarget = points[0];
                 for (var i = 1; i < points.Length; i++)
@@ -204,9 +242,9 @@ namespace FearIndigo.Managers
             var halfBounds = trackBounds / 2f;
             for (var i = 0; i < points.Length; i++)
             {
-                var p1 = points[i];
-                var p2 = points[(i + 1) % points.Length];
-                var midpoint = p1 + (p2 - p1) / 2f;
+                var p0 = points[i];
+                var p1 = points[(i + 1) % points.Length];
+                var midpoint = p0 + (p1 - p0) / 2f;
                 float2 displacedMidpoint;
                 var iteration = 0;
                 do
@@ -214,14 +252,17 @@ namespace FearIndigo.Managers
                     iteration++;
                     if (iteration > maxDisplacementIterations)
                     {
-                        throw new Exception("Took too many iterations to find displaced midpoint!");
+                        throw new GenerationFailedException("Took too many iterations to find displaced midpoint!");
                     }
-                    displacedMidpoint = midpoint + _rng.NextFloat2Direction() * _rng.NextFloat(minDisplacement, maxDisplacement);
+
+                    displacedMidpoint = midpoint + _rng.NextFloat2(
+                                            new float2(-maxXDisplacement, -maxYDisplacement),
+                                            new float2(maxXDisplacement, maxYDisplacement));
                 } while (displacedMidpoint.x < -halfBounds.x || displacedMidpoint.x > halfBounds.x ||
                          displacedMidpoint.y < -halfBounds.y || displacedMidpoint.y > halfBounds.y);
                 displacedMidpoints[i] = displacedMidpoint;
             }
-            return displacedMidpoints;
+            return CombineArrays(points, displacedMidpoints);
         }
 
         /// <summary>
@@ -263,15 +304,17 @@ namespace FearIndigo.Managers
         {
             for (var i = 0; i < points.Length; i++)
             {
-                var p1 = points[i];
-                var p2 = points[(i + 1) % points.Length];
-                var p3 = points[(i + 2) % points.Length];
+                var p0 = points[i];
+                var p1 = points[(i + 1) % points.Length];
+                var p2 = points[(i + 2) % points.Length];
 
-                if (math.distancesq(p1, p2) < minPointDistance * minPointDistance) return false;
-                
-                if (GetAngle(p1 - p2, p3 - p2) < minCornerAngle) return false;
+                var distSqr = math.distancesq(p0, p1);
+                if (distSqr < minPointDistance * minPointDistance || distSqr > maxPointDistance * maxPointDistance)
+                    return false;
+
+                if (GetAngle(p0 - p1, p2 - p1) < minCornerAngle) return false;
             }
-            
+
             return true;
         }
         
@@ -303,6 +346,23 @@ namespace FearIndigo.Managers
                 knots[i] = new Knot(points[i], _rng.NextFloat(minTrackWidth, maxTrackWidth));
             }
             trackSpline.SetKnots(knots);
+        }
+
+        private void OnDrawGizmos()
+        {
+            var halfBounds = trackBounds / 2f;
+            var points = new Vector3[]
+            {
+                new Vector3(-halfBounds.x, -halfBounds.y, 0),
+                new Vector3(-halfBounds.x, halfBounds.y, 0),
+                new Vector3(halfBounds.x, halfBounds.y, 0),
+                new Vector3(halfBounds.x, -halfBounds.y, 0)
+            };
+
+            for (var i = 0; i < points.Length; i++)
+            {
+                Gizmos.DrawLine(points[i], points[(i + 1) % points.Length]);
+            }
         }
     }
 }
