@@ -61,12 +61,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trackSpline: {fileID: 7263852646011388852}
   trackBounds:
-    x: 64
+    x: 114
     y: 64
   minTrackWidth: 2
   maxTrackWidth: 10
-  randomSeed: 322495739
-  numRandomPoints: 12
+  randomSeed: 1829973961
+  numRandomPoints: 16
   maxXDisplacement: 10
   maxYDisplacement: 15
   minPointDistance: 5
