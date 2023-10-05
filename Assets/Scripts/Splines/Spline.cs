@@ -1,105 +1,128 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace FearIndigo.Splines
 {
-    [BurstCompile]
-    public class Spline : MonoBehaviour
+    [Serializable]
+    public class Spline
     {
-        [Range(0,1)]
-        public float alpha = 0.5f;
-        public int resolution = 64;
-        
-        private NativeArray<Knot> _knots;
+        [Range(0, 1)] public float alpha;
+        public NativeArray<float2> points;
 
-        private void OnDestroy()
+        public Spline(float alpha = 0.5f)
         {
-            _knots.Dispose();
+            this.alpha = alpha;
+            points = new NativeArray<float2>(0, Allocator.Persistent);
         }
 
-        [BurstCompile]
-        public void SetKnots(NativeArray<Knot> knots)
+        public void Dispose()
         {
-            _knots.Dispose();
-            _knots = new NativeArray<Knot>(knots, Allocator.Persistent);
+            if (points.IsCreated) points.Dispose();
         }
 
-        [BurstCompile]
-        private float2 GetCurve(float t)
+        public void SetPoints(float2[] newPoints)
         {
-            var i = GetSegmentIndex(t);
-            var segT = GetSegmentT(t);
-            return GetPoint(i, segT);
+            Dispose();
+            points = new NativeArray<float2>(newPoints, Allocator.Persistent);
         }
 
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public float2 GetCurve(float t)
+        {
+            var output = new NativeArray<float2>(1, Allocator.TempJob);
+            var getCurveJob = new GetSplineCurveJob()
+            {
+                T = t,
+                Alpha = alpha,
+                Points = points,
+                Output = output,
+            };
+            getCurveJob.Schedule().Complete();
+            var point = output[0];
+            output.Dispose();
+            return point;
+        }
+
         public int GetSegmentIndex(float t)
         {
-            return (int)(t * _knots.Length);
+            return (int) (t * points.Length);
         }
 
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float GetSegmentT(float t)
         {
-            return t % (1f / _knots.Length) * _knots.Length;
-        }
-        
-        // Evaluates a point at the given t-value from 0 to 1
-        [BurstCompile]
-        private float2 GetPoint(int i, float t)
-        {
-            var p0 = _knots[(_knots.Length + i - 1) % _knots.Length].position;
-            var p1 = _knots[(_knots.Length + i + 0) % _knots.Length].position;
-            var p2 = _knots[(_knots.Length + i + 1) % _knots.Length].position;
-            var p3 = _knots[(_knots.Length + i + 2) % _knots.Length].position;
-            
-            // calculate knots
-            const float k0 = 0;
-            var k1 = GetKnotInterval(p0, p1);
-            var k2 = GetKnotInterval(p1, p2) + k1;
-            var k3 = GetKnotInterval(p2, p3) + k2;
-
-            // evaluate the point
-            var u = math.lerp(k1, k2, t);
-            var a1 = Remap(k0, k1, p0, p1, u);
-            var a2 = Remap(k1, k2, p1, p2, u);
-            var a3 = Remap(k2, k3, p2, p3, u);
-            var b1 = Remap(k0, k2, a1, a2, u);
-            var b2 = Remap(k1, k3, a2, a3, u);
-            return Remap(k1, k2, b1, b2, u);
+            return (t - (1f / points.Length) * GetSegmentIndex(t)) / (1f / points.Length);
         }
 
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private float GetKnotInterval(float2 a, float2 b)
+        [BurstCompile(CompileSynchronously = true)]
+        public struct GetSplineCurveJob : IJob
         {
-            return math.pow(math.distancesq(a, b), 0.5f * alpha);
-        }
-        
-        [BurstCompile]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private float2 Remap(float a, float b, float2 c, float2 d, float u)
-        {
-            return math.lerp(c, d, (u - a) / (b - a));
-        }
+            [ReadOnly] public float T;
+            [ReadOnly] public float Alpha;
+            [ReadOnly] public NativeArray<float2> Points;
 
-        private void OnDrawGizmos()
-        {
-            if(_knots.Length < 4) return;
+            [WriteOnly] public NativeArray<float2> Output;
 
-            var prev = _knots[0].position;
-            for (var i = 0; i < resolution; i++)
+            public void Execute()
             {
-                var t = (i + 1f) / resolution;
-                var current = GetCurve(t);
-                Gizmos.DrawLine(new Vector3(prev.x, prev.y, 0), new Vector3(current.x, current.y, 0));
-                prev = current;
+                GetSegmentIndex(out var segI);
+                GetSegmentT(out var segT);
+                GetPoint(segI, segT, out var point);
+                Output[0] = point;
+            }
+
+            [BurstCompile]
+            private void GetSegmentIndex(out int index)
+            {
+                index = (int) (T * Points.Length);
+            }
+
+            [BurstCompile]
+            private void GetSegmentT(out float segmentT)
+            {
+                GetSegmentIndex(out var index);
+                segmentT = (T - (1f / Points.Length) * index) / (1f / Points.Length);
+            }
+
+            // Evaluates a point at the given t-value from 0 to 1
+            [BurstCompile]
+            private void GetPoint(in int i, in float t, out float2 point)
+            {
+                var p0 = Points[(Points.Length + i - 1) % Points.Length];
+                var p1 = Points[(Points.Length + i + 0) % Points.Length];
+                var p2 = Points[(Points.Length + i + 1) % Points.Length];
+                var p3 = Points[(Points.Length + i + 2) % Points.Length];
+
+                // calculate knots
+                const float k0 = 0;
+                GetKnotInterval(p0, p1, out var k1);
+                GetKnotInterval(p1, p2, out var k2);
+                k2 += k1;
+                GetKnotInterval(p2, p3, out var k3);
+                k3 += k2;
+
+                // evaluate the point
+                var u = math.lerp(k1, k2, t);
+                Remap(k0, k1, p0, p1, u, out var a1);
+                Remap(k1, k2, p1, p2, u, out var a2);
+                Remap(k2, k3, p2, p3, u, out var a3);
+                Remap(k0, k2, a1, a2, u, out var b1);
+                Remap(k1, k3, a2, a3, u, out var b2);
+                Remap(k1, k2, b1, b2, u, out point);
+            }
+
+            [BurstCompile]
+            private void GetKnotInterval(in float2 a, in float2 b, out float interval)
+            {
+                interval = math.pow(math.distancesq(a, b), 0.5f * Alpha);
+            }
+
+            [BurstCompile]
+            private static void Remap(in float a, in float b, in float2 c, in float2 d, float u, out float2 remapped)
+            {
+                remapped = math.lerp(c, d, (u - a) / (b - a));
             }
         }
     }
