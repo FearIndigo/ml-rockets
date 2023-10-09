@@ -207,7 +207,6 @@ namespace FearIndigo.Track
                         if (val > 0)
                         {
                             nextTarget = Points[i];
-                            ClearArray(ref collinearPoints);
                             collinearPointsCount = 0;
                         }
                         else if (val == 0)
@@ -234,8 +233,6 @@ namespace FearIndigo.Track
                             vertices[verticesCount] = collinearPoints[i];
                             verticesCount++;
                         }
-                        
-                        ClearArray(ref collinearPoints);
                         collinearPointsCount = 0;
                     }
 
@@ -253,21 +250,6 @@ namespace FearIndigo.Track
                 collinearPoints.Dispose();
             }
 
-            /// <summary>
-            /// <para>
-            /// Set array back to default values.
-            /// </para>
-            /// </summary>
-            /// <param name="array"></param>
-            [BurstCompile]
-            private static void ClearArray<T>(ref NativeArray<T> array) where T : struct
-            {
-                for (var i = 0; i < array.Length; i++)
-                {
-                    array[i] = default;
-                }
-            }
-            
             /// <summary>
             /// <para>
             /// Gets the index of the point with the lowest y value.

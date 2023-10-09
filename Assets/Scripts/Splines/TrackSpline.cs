@@ -9,25 +9,28 @@ namespace FearIndigo.Splines
 {
     public class TrackSpline : MonoBehaviour
     {
-        [Range(0, 1)]
-        public float debugT;
         [Range(0,1)]
         public float alpha = 0.5f;
         public int resolution = 64;
 
-        public NativeArray<float> widths;
-        [HideInInspector] public Spline centreSpline;
-        [HideInInspector] public Spline leftSpline;
-        [HideInInspector] public Spline rightSpline;
+        public LineRenderer leftLine;
+        public LineRenderer rightLine;
+        
+        private NativeArray<float> _widths;
+        private Spline _centreSpline;
+        private Spline _leftSpline;
+        private Spline _rightSpline;
 
         private bool _init;
+        
+        public float2 GetPoint(int i) => _centreSpline.GetPoint(i);
         
         public void Init()
         {
             if(_init) return;
-            centreSpline = new Spline(alpha);
-            leftSpline = new Spline(alpha);
-            rightSpline = new Spline(alpha);
+            _centreSpline = new Spline(alpha);
+            _leftSpline = new Spline(alpha);
+            _rightSpline = new Spline(alpha);
             _init = true;
         }
         
@@ -39,17 +42,20 @@ namespace FearIndigo.Splines
         private void OnValidate()
         {
             Init();
-            centreSpline.alpha = alpha;
-            leftSpline.alpha = alpha;
-            rightSpline.alpha = alpha;
+            _centreSpline.alpha = alpha;
+            _leftSpline.alpha = alpha;
+            _rightSpline.alpha = alpha;
+            
+            UpdateLine(leftLine, _leftSpline);
+            UpdateLine(rightLine, _rightSpline);
         }
         
         public void Dispose()
         {
-            centreSpline.Dispose();
-            leftSpline.Dispose();
-            rightSpline.Dispose();
-            if(widths.IsCreated) widths.Dispose();
+            _centreSpline.Dispose();
+            _leftSpline.Dispose();
+            _rightSpline.Dispose();
+            if(_widths.IsCreated) _widths.Dispose();
         }
         
         /// <summary>
@@ -63,56 +69,50 @@ namespace FearIndigo.Splines
         {
             Init();
             Dispose();
-            centreSpline.SetPoints(newPoints);
-            widths = new NativeArray<float>(newWidths, Allocator.Persistent);
+            _widths = new NativeArray<float>(newWidths, Allocator.Persistent);
+            _centreSpline.SetPoints(newPoints);
+            _leftSpline.SetPoints(GetOffCentreSplinePoints(true));
+            _rightSpline.SetPoints(GetOffCentreSplinePoints(false));
+            
+            UpdateLine(leftLine, _leftSpline);
+            UpdateLine(rightLine, _rightSpline);
         }
 
-        private void OnDrawGizmos()
+        /// <summary>
+        /// <para>
+        /// Update line renderer positions from spline.
+        /// </para>
+        /// </summary>
+        /// <param name="lineRenderer"></param>
+        /// <param name="spline"></param>
+        private void UpdateLine(LineRenderer lineRenderer, Spline spline)
         {
-            DrawDebugT(centreSpline);
-            DrawPointsGizmos(centreSpline.points);
-            DrawSplineGizmos(centreSpline);
-        }
-        
-        private void DrawDebugT(Spline spline)
-        {
-            if(spline.points.Length < 4) return;
-
-            var curvePos = spline.GetCurve(debugT);
-            var pos = new Vector3(curvePos.x, curvePos.y, 0);
-            Gizmos.DrawSphere(pos, 2f);
-#if UNITY_EDITOR
-            var i = spline.GetSegmentIndex(debugT);
-            var t = spline.GetSegmentT(debugT);
-            Handles.Label(pos, $"index: {i}, t: {t}");
-#endif
-        }
-        
-        private void DrawPointsGizmos(NativeArray<float2> points)
-        {
-            for (var i = 0; i < points.Length; i++)
-            {
-                var p0 = points[i];
-                var pos = new Vector3(p0.x, p0.y, 0);
-                Gizmos.DrawSphere(pos, 0.5f);
-#if UNITY_EDITOR
-                Handles.Label(pos, $"Point: {i}");
-#endif
-            }
-        }
-        
-        private void DrawSplineGizmos(Spline spline)
-        {
-            if(spline.points.Length < 4) return;
-
-            var prev = spline.points[0];
+            if(spline.NumPoints < 4) return;
+            
+            lineRenderer.positionCount = resolution;
             for (var i = 0; i < resolution; i++)
             {
-                var t = (i + 1f) / resolution;
-                var current = spline.GetCurve(t);
-                Gizmos.DrawLine(new Vector3(prev.x, prev.y, 0), new Vector3(current.x, current.y, 0));
-                prev = current;
+                var point = spline.GetCurve(i/(float)resolution);
+                lineRenderer.SetPosition(i, new Vector3(point.x, point.y, 0));
             }
+        }
+
+        /// <summary>
+        /// <para>
+        /// Get points for left or right spline given current centre spline and widths.
+        /// </para>
+        /// <param name="left">Get points for left or right spline.</param>
+        /// </summary>
+        public float2[] GetOffCentreSplinePoints(bool left)
+        {
+            var points = new float2[_centreSpline.NumPoints];
+            for (var i = 0; i < _centreSpline.NumPoints; i++)
+            {
+                var p = _centreSpline.GetPoint(i);
+                var offset = _centreSpline.GetNormal(i/(float)_centreSpline.NumPoints) * _widths[i] / 2f;
+                points[i] = p + (left ? -offset : offset);
+            }
+            return points;
         }
     }
 }

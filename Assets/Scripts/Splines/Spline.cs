@@ -11,23 +11,28 @@ namespace FearIndigo.Splines
     public class Spline
     {
         [Range(0, 1)] public float alpha;
-        public NativeArray<float2> points;
+        private NativeArray<float2> _points;
+
+        public int NumPoints => _points.Length;
+
+        public NativeArray<float2> GetPoints() => _points;
+        public float2 GetPoint(int i) => _points[i];
 
         public Spline(float alpha = 0.5f)
         {
             this.alpha = alpha;
-            points = new NativeArray<float2>(0, Allocator.Persistent);
+            _points = new NativeArray<float2>(0, Allocator.Persistent);
         }
 
         public void Dispose()
         {
-            if (points.IsCreated) points.Dispose();
+            if (_points.IsCreated) _points.Dispose();
         }
-
+        
         public void SetPoints(float2[] newPoints)
         {
             Dispose();
-            points = new NativeArray<float2>(newPoints, Allocator.Persistent);
+            _points = new NativeArray<float2>(newPoints, Allocator.Persistent);
         }
 
         public float2 GetCurve(float t)
@@ -37,7 +42,7 @@ namespace FearIndigo.Splines
             {
                 T = t,
                 Alpha = alpha,
-                Points = points,
+                Points = _points,
                 Output = output,
             };
             getCurveJob.Schedule().Complete();
@@ -46,14 +51,24 @@ namespace FearIndigo.Splines
             return point;
         }
 
+        public float2 GetNormal(float t)
+        {
+            const float tOffset = 0.0001f;
+            var p0 = GetCurve((1f + t - tOffset) % 1f);
+            var p2 = GetCurve((1f + t + tOffset) % 1f);
+
+            var tangent = math.normalize(p0 - p2);
+            return new float2(-tangent.y, tangent.x);
+        }
+
         public int GetSegmentIndex(float t)
         {
-            return (int) (t * points.Length);
+            return (int) (t * _points.Length);
         }
 
         public float GetSegmentT(float t)
         {
-            return (t - (1f / points.Length) * GetSegmentIndex(t)) / (1f / points.Length);
+            return (t - (1f / _points.Length) * GetSegmentIndex(t)) / (1f / _points.Length);
         }
 
         [BurstCompile(CompileSynchronously = true)]
