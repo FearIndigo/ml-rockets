@@ -8,5 +8,12 @@ namespace FearIndigo.Inputs
         public bool up;
         public bool left;
         public bool right;
+
+        public void Reset()
+        {
+            up = false;
+            left = false;
+            right = false;
+        }
     }
 }

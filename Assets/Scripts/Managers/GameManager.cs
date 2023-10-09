@@ -1,8 +1,9 @@
+using System;
+using System.Collections.Generic;
 using Cinemachine;
 using FearIndigo.Checkpoints;
 using FearIndigo.Settings;
 using FearIndigo.Ship;
-using FearIndigo.Splines;
 using FearIndigo.Track;
 using Unity.Mathematics;
 using UnityEngine;
@@ -22,23 +23,53 @@ namespace FearIndigo.Managers
         [Header("Prefabs")]
         public ShipController shipPrefab;
         public Checkpoint checkpointPrefab;
+        public FinishLine finishLinePrefab;
 
         [Header("Gameplay")]
+        public bool timerPaused;
+        public float timer;
+        public int checkpointsAcquired;
+        public Dictionary<int, float> checkpointSplits;
         public ShipController ship;
-        public Checkpoint[] checkpoints;
+        public CheckpointBase[] checkpoints;
         public int activeCheckpointId;
         
         public void Start()
         {
-            GenerateRandomTrack();
+            Reset();
+        }
 
+        /// <summary>
+        /// <para>
+        /// Reset the game.
+        /// </para>
+        /// </summary>
+        public void Reset()
+        {
+            timerPaused = false;
+            timer = 0f;
+            checkpointsAcquired = 0;
+            checkpointSplits = new Dictionary<int, float>();
+            Time.timeScale = 1f;
+
+            GenerateRandomTrack();
+            SpawnShip(trackSpline.GetCentreSplinePoint(0));
+        }
+
+        /// <summary>
+        /// <para>
+        /// Spawn new ship at position.
+        /// </para>
+        /// </summary>
+        /// <param name="position"></param>
+        public void SpawnShip(float2 position)
+        {
             if (ship)
             {
                 Destroy(ship.gameObject);
             }
             ship = Instantiate(shipPrefab, transform);
-            ship.Teleport(trackSpline.GetPoint(0));
-
+            ship.Teleport(position);
             if (virtualCam) virtualCam.Follow = ship.transform;
         }
 
@@ -79,8 +110,8 @@ namespace FearIndigo.Managers
         /// <para>
         /// Create checkpoints from positions.
         /// </para>
-        /// <param name="positions"></param>
         /// </summary>
+        /// <param name="positions"></param>
         private void CreateCheckpoints(float2[] positions)
         {
             if(!Application.isPlaying) return;
@@ -92,14 +123,19 @@ namespace FearIndigo.Managers
                     Destroy(checkpoint.gameObject);
                 }
             }
-
-            checkpoints = new Checkpoint[positions.Length];
-            for (var i = 0; i < positions.Length; i++)
+            
+            checkpoints = new CheckpointBase[positions.Length];
+            for (var i = 0; i < positions.Length - 1; i++)
             {
-                checkpoints[i] = Instantiate(checkpointPrefab, transform);
-                checkpoints[i].Init(this, i, positions[i]);
+                var checkpoint = Instantiate(checkpointPrefab, transform);
+                checkpoint.Init(this, i, positions[i + 1]);
+                checkpoints[i] = checkpoint;
             }
-
+            var finishLine = Instantiate(finishLinePrefab, transform);
+            finishLine.Init(this, checkpoints.Length - 1, positions[0]);
+            finishLine.UpdateLine(trackSpline.GetLeftSplinePoint(0) - positions[0], trackSpline.GetRightSplinePoint(0) - positions[0]);
+            checkpoints[^1] = finishLine;
+            activeCheckpointId = 0;
             SetActiveCheckpoint(0);
         }
 
@@ -111,11 +147,41 @@ namespace FearIndigo.Managers
         /// <param name="checkpointId"></param>
         public void SetActiveCheckpoint(int checkpointId)
         {
-            checkpointId %= checkpoints.Length;
-            checkpoints[activeCheckpointId].SetActive(Checkpoint.State.Inactive);
-            checkpoints[checkpointId].SetActive(Checkpoint.State.Active);
-            checkpoints[(checkpointId + 1) % checkpoints.Length].SetActive(Checkpoint.State.NextActive);
+            checkpoints[activeCheckpointId].SetState(CheckpointBase.State.Inactive);
+            checkpoints[checkpointId].SetState(CheckpointBase.State.Active);
+            if (checkpointId != checkpoints.Length - 1)
+            {
+                checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
+            }
             activeCheckpointId = checkpointId;
+        }
+
+        /// <summary>
+        /// <para>
+        /// Set the timer split for the checkpointId.
+        /// </para>
+        /// </summary>
+        /// <param name="checkpointId"></param>
+        public void UpdateCheckpointSplit(int checkpointId)
+        {
+            checkpointSplits.TryAdd(checkpointId, timer);
+            Debug.Log($"Acquired checkpoint: {checkpointId}, in: {timer} seconds!");
+        }
+
+        public void FixedUpdate()
+        {
+            UpdateTimer();
+        }
+
+        ///<summary>
+        /// <para>
+        /// Increase time on timer if not paused.
+        /// </para>
+        /// </summary>
+        private void UpdateTimer()
+        {
+            if(timerPaused) return;
+            timer += Time.deltaTime;
         }
 
         public void OnDrawGizmos()
