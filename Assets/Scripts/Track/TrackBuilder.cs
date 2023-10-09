@@ -51,6 +51,7 @@ namespace FearIndigo.Track
             outputWidths = widths.GetSubArray(0, numPoints[0]).ToArray();
             points.Dispose();
             widths.Dispose();
+            numPoints.Dispose();
         }
         
         /// <summary>
