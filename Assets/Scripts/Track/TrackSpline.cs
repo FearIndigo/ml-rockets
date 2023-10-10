@@ -172,10 +172,10 @@ namespace FearIndigo.Track
                 var right1 = _rightSpline.GetCurve(t1);
                 shapeGroup.AddPolygon(new List<Vector2>
                 {
-                    left0,
-                    left1,
-                    right1,
-                    right0
+                    transform.TransformPoint((Vector2)left0),
+                    transform.TransformPoint((Vector2)left1),
+                    transform.TransformPoint((Vector2)right1),
+                    transform.TransformPoint((Vector2)right0)
                 });
             }
             

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Cinemachine;
 using FearIndigo.Checkpoints;
@@ -29,14 +28,20 @@ namespace FearIndigo.Managers
         public bool timerPaused;
         public float timer;
         public int checkpointsAcquired;
-        public Dictionary<int, float> checkpointSplits;
+        public Dictionary<int, float> checkpointSplits = new Dictionary<int, float>();
         public ShipController ship;
         public CheckpointBase[] checkpoints;
         public int activeCheckpointId;
         
+        public Vector2 ActiveCheckpointDirection(Vector2 position) =>
+            (Vector2)checkpoints[activeCheckpointId].transform.position - position;
+        public Vector2 NextActiveCheckpointDirection(Vector2 position) => activeCheckpointId != checkpoints.Length - 1
+            ? (Vector2)checkpoints[activeCheckpointId + 1].transform.position - position
+            : Vector2.zero;
+        
         public void Start()
         {
-            Reset();
+            SpawnShip(float2.zero);
         }
 
         /// <summary>
@@ -49,7 +54,7 @@ namespace FearIndigo.Managers
             timerPaused = false;
             timer = 0f;
             checkpointsAcquired = 0;
-            checkpointSplits = new Dictionary<int, float>();
+            checkpointSplits.Clear();
             Time.timeScale = 1f;
 
             GenerateRandomTrack();
@@ -58,19 +63,18 @@ namespace FearIndigo.Managers
 
         /// <summary>
         /// <para>
-        /// Spawn new ship at position.
+        /// Spawn new ship at position, or teleport current ship to position.
         /// </para>
         /// </summary>
         /// <param name="position"></param>
         public void SpawnShip(float2 position)
         {
-            if (ship)
+            if (!ship)
             {
-                Destroy(ship.gameObject);
+                ship = Instantiate(shipPrefab, transform);
+                if (virtualCam) virtualCam.Follow = ship.transform;
             }
-            ship = Instantiate(shipPrefab, transform);
             ship.Teleport(position);
-            if (virtualCam) virtualCam.Follow = ship.transform;
         }
 
         /// <summary>
@@ -128,11 +132,11 @@ namespace FearIndigo.Managers
             for (var i = 0; i < positions.Length - 1; i++)
             {
                 var checkpoint = Instantiate(checkpointPrefab, transform);
-                checkpoint.Init(this, i, positions[i + 1]);
+                checkpoint.Init(i, positions[i + 1]);
                 checkpoints[i] = checkpoint;
             }
             var finishLine = Instantiate(finishLinePrefab, transform);
-            finishLine.Init(this, checkpoints.Length - 1, positions[0]);
+            finishLine.Init(checkpoints.Length - 1, positions[0]);
             finishLine.UpdateLine(trackSpline.GetLeftSplinePoint(0) - positions[0], trackSpline.GetRightSplinePoint(0) - positions[0]);
             checkpoints[^1] = finishLine;
             activeCheckpointId = 0;
@@ -141,19 +145,20 @@ namespace FearIndigo.Managers
 
         /// <summary>
         /// <para>
-        /// Sets the new active checkpoint.
+        /// Sets the active checkpoint, the next active checkpoint and deactivates the previously active checkpoint.
         /// </para>
         /// </summary>
         /// <param name="checkpointId"></param>
         public void SetActiveCheckpoint(int checkpointId)
         {
             checkpoints[activeCheckpointId].SetState(CheckpointBase.State.Inactive);
+            
+            if (checkpointId >= checkpoints.Length) return;
             checkpoints[checkpointId].SetState(CheckpointBase.State.Active);
-            if (checkpointId != checkpoints.Length - 1)
-            {
-                checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
-            }
             activeCheckpointId = checkpointId;
+            
+            if (activeCheckpointId >= checkpoints.Length - 1) return;
+            checkpoints[activeCheckpointId + 1].SetState(CheckpointBase.State.NextActive);
         }
 
         /// <summary>
@@ -165,7 +170,6 @@ namespace FearIndigo.Managers
         public void UpdateCheckpointSplit(int checkpointId)
         {
             checkpointSplits.TryAdd(checkpointId, timer);
-            Debug.Log($"Acquired checkpoint: {checkpointId}, in: {timer} seconds!");
         }
 
         public void FixedUpdate()

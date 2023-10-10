@@ -15,23 +15,28 @@ namespace FearIndigo.Checkpoints
             NextActive,
             Active
         }
-        
+
+        public string activeCheckpointTag = "Checkpoint";
         public int checkpointID;
         public State state;
+        public float checkpointReward = 0.5f;
 
         protected GameManager GameManager;
+
+        private void Awake()
+        {
+            GameManager = GetComponentInParent<GameManager>();
+        }
 
         /// <summary>
         /// <para>
         /// Initialize checkpoint.
         /// </para>
         /// </summary>
-        /// <param name="gameManager"></param>
         /// <param name="id"></param>
         /// <param name="position"></param>
-        public void Init(GameManager gameManager, int id, float2 position)
+        public void Init(int id, float2 position)
         {
-            GameManager = gameManager;
             checkpointID = id;
             transform.localPosition = new Vector3(position.x, position.y, 0);
             SetState(State.Inactive);
@@ -46,6 +51,9 @@ namespace FearIndigo.Checkpoints
         public void SetState(State newState)
         {
             state = newState;
+            tag = state == State.Active ?
+                activeCheckpointTag :
+                "Untagged";
             
             OnStateChanged();
         }
@@ -78,6 +86,7 @@ namespace FearIndigo.Checkpoints
             GameManager.SetActiveCheckpoint(checkpointID + 1);
             GameManager.checkpointsAcquired++;
             GameManager.UpdateCheckpointSplit(checkpointID);
+            shipController.AddReward(checkpointReward);
         }
     }
 }

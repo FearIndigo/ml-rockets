@@ -53,14 +53,14 @@ namespace FearIndigo.Checkpoints
 
         protected override void OnCheckpointAcquired(ShipController shipController)
         {
-            SetState(State.Inactive);
-            GameManager.checkpointsAcquired++;
-            GameManager.UpdateCheckpointSplit(checkpointID);
-            
+            base.OnCheckpointAcquired(shipController);
+
             Time.timeScale = 0.1f;
             GameManager.timerPaused = true;
             
             Debug.Log("Crossed the finish line!");
+            
+            shipController.EndEpisode();
         }
     }
 }

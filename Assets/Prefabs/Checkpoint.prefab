@@ -46,12 +46,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42892c69b0264650a463596ad5a5a32b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activeCheckpointTag: Checkpoint
   checkpointID: 0
   state: 0
+  checkpointReward: 0.5
+  spriteRenderer: {fileID: 7505624109589260364}
   activeColor: {r: 0, g: 1, b: 0.054187775, a: 1}
   nextActiveColor: {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   inactiveColor: {r: 0.851, g: 0.30582815, b: 0.27923438, a: 1}
-  spriteRenderer: {fileID: 7505624109589260364}
 --- !u!212 &7505624109589260364
 SpriteRenderer:
   m_ObjectHideFlags: 0
