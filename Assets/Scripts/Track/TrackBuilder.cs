@@ -1,10 +1,10 @@
 using System;
+using System.Linq;
 using FearIndigo.Settings;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using UnityEngine;
 using Random = Unity.Mathematics.Random;
 
 namespace FearIndigo.Track
@@ -39,19 +39,36 @@ namespace FearIndigo.Track
             var points = new NativeArray<float2>(config.numRandomPoints * 2, Allocator.TempJob);
             var widths = new NativeArray<float>(config.numRandomPoints * 2, Allocator.TempJob);
             var numPoints = new NativeArray<int>(1, Allocator.TempJob);
+            var reverseDirection = new NativeArray<bool>(1, Allocator.TempJob);
+            var startIndex = new NativeArray<int>(1, Allocator.TempJob);
             var trackGenerationJob = new TrackGenerationJob()
             {
                 Config = config,
                 Points = points,
                 Widths = widths,
-                NumPoints = numPoints
+                NumPoints = numPoints,
+                ReverseDirection = reverseDirection,
+                StartIndex = startIndex
             };
             trackGenerationJob.Schedule().Complete();
-            outputPoints = points.GetSubArray(0, numPoints[0]).ToArray();
+            var subArrayPoints = points.GetSubArray(0, numPoints[0]);
+            outputPoints = new float2[numPoints[0]];
+            for (var i = 0; i < numPoints[0]; i++)
+            {
+                var index = (startIndex[0] + i) % numPoints[0];
+                outputPoints[i] = subArrayPoints[index];
+            }
+            if (reverseDirection[0])
+            {
+                outputPoints = outputPoints.Reverse().ToArray();
+            }
             outputWidths = widths.GetSubArray(0, numPoints[0]).ToArray();
             points.Dispose();
             widths.Dispose();
             numPoints.Dispose();
+            reverseDirection.Dispose();
+            startIndex.Dispose();
+            subArrayPoints.Dispose();
         }
         
         /// <summary>
@@ -67,6 +84,8 @@ namespace FearIndigo.Track
             public NativeArray<float2> Points;
             [WriteOnly] public NativeArray<float> Widths;
             public NativeArray<int> NumPoints;
+            [WriteOnly] public NativeArray<bool> ReverseDirection;
+            [WriteOnly] public NativeArray<int> StartIndex;
 
             public void Execute()
             {
@@ -102,6 +121,12 @@ namespace FearIndigo.Track
                 {
                     Widths[i] = rng.NextFloat(Config.minTrackWidth, Config.maxTrackWidth);
                 }
+
+                // Change track to be counter clockwise
+                ReverseDirection[0] = rng.NextBool();
+                
+                // Choose random start index
+                StartIndex[0] = rng.NextInt(NumPoints[0]);
             }
 
             /// <summary>

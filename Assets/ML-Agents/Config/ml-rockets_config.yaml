@@ -20,12 +20,12 @@ behaviors:
     reward_signals:
       extrinsic:
         gamma: 0.995
-        strength: 2.0
+        strength: 1.0
       gail:
         gamma: 0.99
-        strength: 0.01
+        strength: 0.05
         learning_rate: 0.0003
-        use_actions: false
+        use_actions: true
         use_vail: false
         demo_path: Assets/ML-Agents/Demonstrations/ShipBehaviorDemo.demo
         network_settings:

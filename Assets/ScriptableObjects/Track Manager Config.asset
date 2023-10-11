@@ -13,18 +13,18 @@ MonoBehaviour:
   m_Name: Track Manager Config
   m_EditorClassIdentifier: 
   data:
-    seed: 1262703621
+    seed: 1160809374
     trackBounds:
       x: 114
       y: 64
-    minTrackWidth: 5
-    maxTrackWidth: 10
+    minTrackWidth: 6
+    maxTrackWidth: 11
     numRandomPoints: 16
     minRandomPointDistance: 5
     maxXDisplacement: 15
     maxYDisplacement: 20
     minPointDistance: 10
-    minCornerAngle: 20
+    minCornerAngle: 30
     maxIterations: 1000
     maxRandomPointIterations: 1000
     maxConvexHullIterations: 1000

@@ -1,3 +1,4 @@
+using System;
 using FearIndigo.Managers;
 using Unity.Mathematics;
 using Unity.MLAgents;
@@ -65,8 +66,10 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.ActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
             // Relative direction to next active checkpoint (2 float)
             sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.NextActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
+            // Relative direction to previous active checkpoint (2 float)
+            sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.PreviousActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
             
-            // 8 total
+            // 10 total
         }
 
         private float NormaliseRotation(float input)
@@ -126,7 +129,7 @@ namespace FearIndigo.Ship
 
             if (discreteActions[0] == 1)
             {
-                _rb.velocity += (Vector2)(transform.rotation * Vector3.up * (linearThrust * Time.deltaTime));
+                _rb.velocity += (Vector2)(transform.rotation * Vector3.up * linearThrust);
             }
 
             var torque = discreteActions[1] switch
@@ -136,7 +139,7 @@ namespace FearIndigo.Ship
                 2 => -1f, // Rotate right
                 _ => 0 // default = No rotation
             };
-            _rb.angularVelocity += torque * angularThrust * Time.deltaTime;
+            _rb.angularVelocity += torque * angularThrust;
             
             AddReward(stepPunishment);
         }

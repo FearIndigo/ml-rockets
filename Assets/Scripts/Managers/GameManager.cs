@@ -35,9 +35,11 @@ namespace FearIndigo.Managers
         
         public Vector2 ActiveCheckpointDirection(Vector2 position) =>
             (Vector2)checkpoints[activeCheckpointId].transform.position - position;
-        public Vector2 NextActiveCheckpointDirection(Vector2 position) => activeCheckpointId != checkpoints.Length - 1
+        public Vector2 NextActiveCheckpointDirection(Vector2 position) => activeCheckpointId < checkpoints.Length - 1
             ? (Vector2)checkpoints[activeCheckpointId + 1].transform.position - position
             : Vector2.zero;
+        public Vector2 PreviousActiveCheckpointDirection(Vector2 position) =>
+            (Vector2)checkpoints[(checkpoints.Length + activeCheckpointId - 1) % checkpoints.Length].transform.position - position;
         
         public void Start()
         {
