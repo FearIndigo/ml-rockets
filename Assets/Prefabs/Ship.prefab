@@ -51,17 +51,15 @@ MonoBehaviour:
   m_AgentGameObject: {fileID: 9135016549219995015}
   m_DetectableTags:
   - Track
-  - Checkpoint
   m_ColliderMask:
     serializedVersion: 2
     m_Bits: 1
   m_MaxColliderBufferSize: 500
   m_InitialColliderBufferSize: 4
   m_DebugColors:
-  - {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   - {r: 0, g: 1, b: 0.054187775, a: 1}
   m_ShowGizmos: 0
-  m_CompressionType: 0
+  m_CompressionType: 1
   m_ObservationStacks: 1
 --- !u!1 &8775391010865137338
 GameObject:
@@ -285,7 +283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 5000
+  NumStepsToRecord: 10000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673
@@ -300,7 +298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 2
+  DecisionPeriod: 1
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
 --- !u!114 &8142859885474923782
