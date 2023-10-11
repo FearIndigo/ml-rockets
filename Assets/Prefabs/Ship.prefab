@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor2D
-  m_CellScale: {x: 1, y: 1}
-  m_GridSize: {x: 20, y: 20}
+  m_CellScale: {x: 2, y: 2}
+  m_GridSize: {x: 10, y: 10}
   m_RotateWithAgent: 1
   m_AgentGameObject: {fileID: 9135016549219995015}
   m_DetectableTags:
@@ -61,7 +61,7 @@ MonoBehaviour:
   - {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   - {r: 0, g: 1, b: 0.054187775, a: 1}
   m_ShowGizmos: 0
-  m_CompressionType: 1
+  m_CompressionType: 0
   m_ObservationStacks: 1
 --- !u!1 &8775391010865137338
 GameObject:
@@ -263,7 +263,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 10000
+  MaxStep: 3000
   linearThrust: 40
   angularThrust: 1000
   trail: {fileID: 1153344453147124743}
@@ -285,7 +285,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 100000
+  NumStepsToRecord: 5000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673
@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 1
+  DecisionPeriod: 2
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
 --- !u!114 &8142859885474923782

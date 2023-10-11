@@ -49,7 +49,7 @@ MonoBehaviour:
   activeCheckpointTag: Checkpoint
   checkpointID: 0
   state: 0
-  checkpointReward: 0.5
+  checkpointReward: 1
   spriteRenderer: {fileID: 7505624109589260364}
   activeColor: {r: 0, g: 1, b: 0.054187775, a: 1}
   nextActiveColor: {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}

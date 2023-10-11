@@ -480,7 +480,7 @@ MonoBehaviour:
   baseArea: {fileID: 2376483266832581112, guid: a48ab48bc9928ca4298980253f98c76f, type: 3}
   numAreas: 4
   separation: 150
-  buildOnly: 0
+  buildOnly: 1
 --- !u!4 &1244495609
 Transform:
   m_ObjectHideFlags: 0

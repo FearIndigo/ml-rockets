@@ -76,7 +76,7 @@ namespace FearIndigo.Ship
 
         private float Normalise(float input, float max)
         {
-            return Mathf.Sign(input) * (1f - Mathf.Pow(1f - Mathf.Clamp(Mathf.Abs(input) / max, -1f, 1f), pFactor));
+            return Mathf.Sign(input) * (1f - Mathf.Pow(1f - Mathf.Clamp01(Mathf.Abs(input) / max), pFactor));
         }
 
         private Vector2 Normalise(Vector2 input, float max)
