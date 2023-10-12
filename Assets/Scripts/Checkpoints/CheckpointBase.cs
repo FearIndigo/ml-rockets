@@ -1,6 +1,7 @@
 ﻿using System;
 using FearIndigo.Managers;
 using FearIndigo.Ship;
+using FearIndigo.Utility;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -15,11 +16,12 @@ namespace FearIndigo.Checkpoints
             NextActive,
             Active
         }
-
-        public string activeCheckpointTag = "Checkpoint";
+        
         public int checkpointID;
         public State state;
-        public float checkpointReward = 0.5f;
+        public UnityLayer activeCheckpointLayer;
+        public UnityLayer inactiveCheckpointLayer;
+        public float checkpointReward = 1f;
 
         protected GameManager GameManager;
 
@@ -51,9 +53,11 @@ namespace FearIndigo.Checkpoints
         public void SetState(State newState)
         {
             state = newState;
-            tag = state == State.Active ?
-                activeCheckpointTag :
-                "Untagged";
+            gameObject.layer = state switch
+            {
+                State.Active => activeCheckpointLayer,
+                _ => inactiveCheckpointLayer
+            };
             
             OnStateChanged();
         }

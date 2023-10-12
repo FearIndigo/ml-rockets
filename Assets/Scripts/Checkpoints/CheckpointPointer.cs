@@ -6,6 +6,7 @@ namespace FearIndigo.Checkpoints
 {
     public class CheckpointPointer : MonoBehaviour
     {
+        public bool useNextActiveCheckpoint;
         public SpriteRenderer spriteRenderer;
         public float2 fadeDistance;
         public float maxAlpha;
@@ -21,10 +22,12 @@ namespace FearIndigo.Checkpoints
 
         private void LateUpdate()
         {
-            var activeCheckpointDirection = _gameManager.ActiveCheckpointDirection(transform.position);
-            transform.rotation = Quaternion.LookRotation(activeCheckpointDirection, Vector3.back);
+            var checkpointDirection = useNextActiveCheckpoint ?
+                _gameManager.NextActiveCheckpointDirection(transform.position) : 
+                _gameManager.ActiveCheckpointDirection(transform.position);
+            transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
 
-            _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, activeCheckpointDirection.magnitude), 0, maxAlpha);
+            _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
             spriteRenderer.color = _color;
         }
     }

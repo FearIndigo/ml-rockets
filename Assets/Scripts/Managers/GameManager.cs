@@ -30,8 +30,8 @@ namespace FearIndigo.Managers
         public int checkpointsAcquired;
         public Dictionary<int, float> checkpointSplits = new Dictionary<int, float>();
         public ShipController ship;
-        public CheckpointBase[] checkpoints;
         public int activeCheckpointId;
+        public CheckpointBase[] checkpoints;
         
         public Vector2 ActiveCheckpointDirection(Vector2 position) =>
             (Vector2)checkpoints[activeCheckpointId].transform.position - position;
@@ -134,13 +134,17 @@ namespace FearIndigo.Managers
             for (var i = 0; i < positions.Length - 1; i++)
             {
                 var checkpoint = Instantiate(checkpointPrefab, transform);
-                checkpoint.Init(i, positions[i + 1]);
+                var posIndex = i + 1;
+                var position = positions[posIndex];
+                checkpoint.Init(i, position);
+                checkpoint.UpdateLine(trackSpline.GetLeftSplinePoint(posIndex) - position, trackSpline.GetRightSplinePoint(posIndex) - position);
                 checkpoints[i] = checkpoint;
             }
             var finishLine = Instantiate(finishLinePrefab, transform);
             finishLine.Init(checkpoints.Length - 1, positions[0]);
             finishLine.UpdateLine(trackSpline.GetLeftSplinePoint(0) - positions[0], trackSpline.GetRightSplinePoint(0) - positions[0]);
             checkpoints[^1] = finishLine;
+            
             activeCheckpointId = 0;
             SetActiveCheckpoint(0);
         }

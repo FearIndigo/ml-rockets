@@ -17,6 +17,7 @@ namespace FearIndigo.Ship
 
         [Header("Graphics")]
         public TrailRenderer trail;
+        public ParticleSystem thrustParticles;
 
         [Header("AI")]
         public float stepPunishment = -0.001f;
@@ -53,21 +54,18 @@ namespace FearIndigo.Ship
         /// <param name="sensor">The vector observations for the agent.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            var shipTransform = transform;
-            var shipPosition = (Vector2)shipTransform.position;
-            
             // Ship velocity (2 float)
-            sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_rb.velocity), maxVelocityObservation));
+            sensor.AddObservation(Normalise(_rb.velocity, maxVelocityObservation));
             // Ship angular velocity (1 float)
             sensor.AddObservation(Normalise(_rb.angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
-            sensor.AddObservation(NormaliseRotation(shipTransform.eulerAngles.z));
-            // Relative direction to active checkpoint (2 float)
-            sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.ActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
-            // Relative direction to next active checkpoint (2 float)
-            sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.NextActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
-            // Relative direction to previous active checkpoint (2 float)
-            sensor.AddObservation(Normalise(shipTransform.InverseTransformDirection(_gameManager.PreviousActiveCheckpointDirection(shipPosition)), maxDistanceObservation));
+            sensor.AddObservation(NormaliseRotation(transform.eulerAngles.z));
+            // Direction to active checkpoint (2 float)
+            sensor.AddObservation(Normalise(_gameManager.ActiveCheckpointDirection(_rb.position), maxDistanceObservation));
+            // Direction to next active checkpoint (2 float)
+            sensor.AddObservation(Normalise(_gameManager.NextActiveCheckpointDirection(_rb.position), maxDistanceObservation));
+            // Direction to previous active checkpoint (2 float)
+            sensor.AddObservation(Normalise(_gameManager.PreviousActiveCheckpointDirection(_rb.position), maxDistanceObservation));
             
             // 10 total
         }
@@ -130,6 +128,11 @@ namespace FearIndigo.Ship
             if (discreteActions[0] == 1)
             {
                 _rb.velocity += (Vector2)(transform.rotation * Vector3.up * linearThrust);
+                thrustParticles.Play();
+            }
+            else
+            {
+                thrustParticles.Stop();
             }
 
             var torque = discreteActions[1] switch
