@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace FearIndigo.Utility
 {
@@ -8,5 +9,6 @@ namespace FearIndigo.Utility
         public int layerIndex;
 
         public static implicit operator int(UnityLayer unityLayer) => unityLayer.layerIndex;
+        public static implicit operator LayerMask(UnityLayer unityLayer) => (1 << unityLayer);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FearIndigo.Managers;
+using FearIndigo.Ship;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -12,22 +13,37 @@ namespace FearIndigo.Checkpoints
         public float maxAlpha;
 
         private Color _color;
+        private ShipController _ship;
         private GameManager _gameManager;
 
-        private void Awake()
+        private void Start()
         {
+            _ship = GetComponentInParent<ShipController>();
             _gameManager = GetComponentInParent<GameManager>();
             _color = spriteRenderer.color;
+
+            if (_gameManager.shipManager.ships[0] != _ship)
+            {
+                Destroy(gameObject);
+            }
         }
 
         private void LateUpdate()
         {
             var checkpointDirection = useNextActiveCheckpoint ?
-                _gameManager.NextActiveCheckpointDirection(transform.position) : 
-                _gameManager.ActiveCheckpointDirection(transform.position);
-            transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
+                _gameManager.checkpointManager.NextActiveCheckpointDirection(_ship) : 
+                _gameManager.checkpointManager.ActiveCheckpointDirection(_ship);
 
-            _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
+            if (checkpointDirection == Vector2.zero)
+            {
+                _color.a = 0f;
+            }
+            else
+            {
+                transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
+                _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
+            }
+
             spriteRenderer.color = _color;
         }
     }

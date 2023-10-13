@@ -1,7 +1,6 @@
 ﻿using System;
 using FearIndigo.Managers;
 using FearIndigo.Ship;
-using FearIndigo.Utility;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -17,10 +16,8 @@ namespace FearIndigo.Checkpoints
             Active
         }
         
-        public int checkpointID;
+        public int checkpointId;
         public State state;
-        public UnityLayer activeCheckpointLayer;
-        public UnityLayer inactiveCheckpointLayer;
         public float checkpointReward = 1f;
 
         protected GameManager GameManager;
@@ -39,7 +36,7 @@ namespace FearIndigo.Checkpoints
         /// <param name="position"></param>
         public void Init(int id, float2 position)
         {
-            checkpointID = id;
+            checkpointId = id;
             transform.localPosition = new Vector3(position.x, position.y, 0);
             SetState(State.Inactive);
         }
@@ -53,12 +50,7 @@ namespace FearIndigo.Checkpoints
         public void SetState(State newState)
         {
             state = newState;
-            gameObject.layer = state switch
-            {
-                State.Active => activeCheckpointLayer,
-                _ => inactiveCheckpointLayer
-            };
-            
+
             OnStateChanged();
         }
 
@@ -71,26 +63,24 @@ namespace FearIndigo.Checkpoints
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if(state != State.Active) return;
-
-            if (other.gameObject.TryGetComponent<ShipController>(out var shipController))
+            if (other.gameObject.TryGetComponent<ShipController>(out var ship) &&
+                GameManager.checkpointManager.GetActiveCheckpointId(ship) == checkpointId)
             {
-                OnCheckpointAcquired(shipController);
+                OnCheckpointAcquired(ship);
             }
         }
 
         /// <summary>
         /// <para>
-        /// Called when the checkpoint has been acquired by the ship.
+        /// Called when the checkpoint has been acquired by a ship.
         /// </para>
         /// </summary>
-        /// <param name="shipController"></param>
-        protected virtual void OnCheckpointAcquired(ShipController shipController)
+        /// <param name="ship"></param>
+        protected virtual void OnCheckpointAcquired(ShipController ship)
         {
-            GameManager.SetActiveCheckpoint(checkpointID + 1);
-            GameManager.checkpointsAcquired++;
-            GameManager.UpdateCheckpointSplit(checkpointID);
-            shipController.AddReward(checkpointReward);
+            GameManager.checkpointManager.SetActiveCheckpoint(ship, checkpointId + 1);
+            GameManager.checkpointManager.UpdateCheckpointSplit(ship, checkpointId);
+            ship.AddReward(checkpointReward);
         }
     }
 }

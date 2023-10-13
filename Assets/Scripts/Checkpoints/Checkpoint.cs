@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FearIndigo.Ship;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ namespace FearIndigo.Checkpoints
         public Color activeColor;
         public Color nextActiveColor;
         public Color inactiveColor;
-        
+        public ContactFilter2D contactFilter;
+
         /// <summary>
         /// <para>
         /// Update the checkpoint start and end positions.

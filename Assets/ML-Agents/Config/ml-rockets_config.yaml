@@ -16,7 +16,7 @@ behaviors:
       normalize: false
       hidden_units: 256
       num_layers: 3
-      vis_encode_type: fully_connected
+      vis_encode_type: simple
     reward_signals:
       extrinsic:
         gamma: 0.995
@@ -28,8 +28,6 @@ behaviors:
         use_actions: true
         use_vail: false
         demo_path: Assets/ML-Agents/Demonstrations/ShipBehaviorDemo.demo
-        network_settings:
-          vis_encode_type: fully_connected
     threaded: true
     keep_checkpoints: 5
     max_steps: 10000000

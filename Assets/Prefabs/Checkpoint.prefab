@@ -46,12 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42892c69b0264650a463596ad5a5a32b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  checkpointID: 0
+  checkpointId: 0
   state: 0
-  activeCheckpointLayer:
-    layerIndex: 6
-  inactiveCheckpointLayer:
-    layerIndex: 0
   checkpointReward: 1
   lineRenderer: {fileID: 6781208390177109422}
   edgeCollider: {fileID: 6375739939332349406}

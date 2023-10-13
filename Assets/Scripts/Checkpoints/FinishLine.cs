@@ -5,16 +5,15 @@ namespace FearIndigo.Checkpoints
 {
     public class FinishLine : Checkpoint
     {
-        protected override void OnCheckpointAcquired(ShipController shipController)
+        protected override void OnCheckpointAcquired(ShipController ship)
         {
-            base.OnCheckpointAcquired(shipController);
-
-            Time.timeScale = 0.1f;
-            GameManager.timerPaused = true;
+            base.OnCheckpointAcquired(ship);
+            
+            GameManager.shipManager.StopShip(ship);
             
             Debug.Log("Crossed the finish line!");
             
-            shipController.EndEpisode();
+            ship.EndEpisode();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FearIndigo.Splines;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -27,11 +28,12 @@ namespace FearIndigo.Track
         private Spline _leftSpline;
         private Spline _rightSpline;
         private Mesh _trackMesh;
-        
+
+        public NativeArray<float2> GetCentreSplinePoints() => _centreSpline.GetPoints();
         public float2 GetCentreSplinePoint(int i) => _centreSpline.GetPoint(i);
         public float2 GetLeftSplinePoint(int i) => _leftSpline.GetPoint(i);
         public float2 GetRightSplinePoint(int i) => _rightSpline.GetPoint(i);
-        
+
         public void Init()
         {
             if(_init) return;

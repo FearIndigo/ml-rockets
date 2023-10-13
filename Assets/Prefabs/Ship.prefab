@@ -219,78 +219,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2106282423271336959
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7146098657204479035}
-  - component: {fileID: 8193948490891142420}
-  - component: {fileID: 874540849444232891}
-  m_Layer: 0
-  m_Name: RayPerceptionSensor2D
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7146098657204479035
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106282423271336959}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3816154931880567168}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8193948490891142420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106282423271336959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73c5d23270674c138483d6ae3ebfe5f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetRotation: {x: 0, y: 0, z: 0}
---- !u!114 &874540849444232891
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106282423271336959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f67c7e722ba14acd9153bb4488bff6e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor2D
-  m_DetectableTags: []
-  m_RaysPerDirection: 4
-  m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1.5
-  m_RayLength: 15
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  m_ObservationStacks: 1
-  m_AlternatingRayOrder: 0
-  m_UseBatchedRaycasts: 0
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &2237591087501815648
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,8 +264,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SensorName: GridSensor2D
-  m_CellScale: {x: 2, y: 2}
-  m_GridSize: {x: 10, y: 10}
+  m_CellScale: {x: 1, y: 1}
+  m_GridSize: {x: 30, y: 30}
   m_RotateWithAgent: 0
   m_AgentGameObject: {fileID: 9135016549219995015}
   m_DetectableTags:
@@ -399,7 +327,7 @@ ParticleSystem:
   cullingMode: 0
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
-  emitterVelocityMode: 1
+  emitterVelocityMode: 0
   looping: 1
   prewarm: 0
   playOnAwake: 0
@@ -955,7 +883,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     randomizeRotationDirection: 0
-    gravitySource: 0
+    gravitySource: 1
     maxNumParticles: 1000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
@@ -5417,7 +5345,6 @@ Transform:
   - {fileID: 7128265737542502326}
   - {fileID: 8535762198776425898}
   - {fileID: 2735871211515188489}
-  - {fileID: 7146098657204479035}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5631927508277157399
@@ -5436,15 +5363,20 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  linearThrust: 0.6
-  angularThrust: 18
+  linearThrust: 40
+  angularThrust: 1200
+  drag: 0.5
+  angularDrag: 3
   trail: {fileID: 1153344453147124743}
   thrustParticles: {fileID: 3688294887216310201}
   stepPunishment: -0.0005
   pFactor: 3
-  maxVelocityObservation: 80
+  maxVelocityObservation: 100
   maxAngularVelocityObservation: 400
-  maxDistanceObservation: 120
+  maxDistanceObservation: 200
+  velocity: {x: 0, y: 0}
+  angularVelocity: 0
+  rb: {fileID: 0}
 --- !u!114 &8814278861245917250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5489,7 +5421,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 10
+    VectorObservationSize: 12
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
@@ -5602,7 +5534,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9135016549219995015}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -5618,6 +5550,6 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
