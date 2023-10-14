@@ -22,7 +22,7 @@ namespace FearIndigo.Managers
         /// </summary>
         public void SpawnShips()
         {
-            var position = GameManager.trackManager.GetCentreSplinePoint(0);
+            var position = GameManager.trackManager.trackSpline.centreSpline.points[0];
             for (var i = 0; i < numShips; i++)
             {
                 ShipController ship;

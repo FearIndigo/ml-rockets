@@ -18,6 +18,8 @@ namespace FearIndigo.Checkpoints
         
         public int checkpointId;
         public State state;
+        public float width;
+        public float rotation;
         public float checkpointReward = 1f;
 
         protected GameManager GameManager;
@@ -34,9 +36,13 @@ namespace FearIndigo.Checkpoints
         /// </summary>
         /// <param name="id"></param>
         /// <param name="position"></param>
-        public void Init(int id, float2 position)
+        /// <param name="checkpointWidth"></param>
+        /// <param name="checkpointDirection"></param>
+        public void Init(int id, float2 position, float checkpointWidth, float2 checkpointDirection)
         {
             checkpointId = id;
+            width = checkpointWidth;
+            rotation = (Mathf.Atan2(checkpointDirection.y, checkpointDirection.x) * Mathf.Rad2Deg + 270f) % 360f;
             transform.localPosition = new Vector3(position.x, position.y, 0);
             SetState(State.Inactive);
         }

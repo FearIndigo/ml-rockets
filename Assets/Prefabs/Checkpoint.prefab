@@ -48,10 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkpointId: 0
   state: 0
+  width: 0
+  orientation:
+    x: 0
+    y: 0
   checkpointReward: 1
   lineRenderer: {fileID: 6781208390177109422}
   edgeCollider: {fileID: 6375739939332349406}
-  width: 0.8
+  colliderWidth: 0.8
   activeColor: {r: 0, g: 1, b: 0.054187775, a: 1}
   nextActiveColor: {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   inactiveColor: {r: 0.851, g: 0.30582815, b: 0.27923438, a: 0.5019608}

@@ -9,7 +9,7 @@ namespace FearIndigo.Checkpoints
     {
         public LineRenderer lineRenderer;
         public EdgeCollider2D edgeCollider;
-        public float width;
+        public float colliderWidth;
         public Color activeColor;
         public Color nextActiveColor;
         public Color inactiveColor;
@@ -24,14 +24,14 @@ namespace FearIndigo.Checkpoints
         /// <param name="endPoint"></param>
         public void UpdateLine(float2 startPoint, float2 endPoint)
         {
-            lineRenderer.widthMultiplier = width;
+            lineRenderer.widthMultiplier = colliderWidth;
             lineRenderer.positionCount = 2;
             lineRenderer.SetPositions(new[]
             {
                 new Vector3(startPoint.x, startPoint.y, 0),
                 new Vector3(endPoint.x, endPoint.y, 0)
             });
-            edgeCollider.edgeRadius = width / 2f;
+            edgeCollider.edgeRadius = colliderWidth / 2f;
             edgeCollider.SetPoints(new List<Vector2>()
             {
                 new Vector2(startPoint.x, startPoint.y),

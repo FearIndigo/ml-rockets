@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FearIndigo.Splines;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -22,25 +21,21 @@ namespace FearIndigo.Track
         public MeshFilter meshFilter;
         public CustomCollider2D trackCollider;
         
+        [HideInInspector] public Spline centreSpline;
+        [HideInInspector] public Spline leftSpline;
+        [HideInInspector] public Spline rightSpline;
+        [HideInInspector] public NativeArray<float> widths;
+        
         private bool _init;
-        private NativeArray<float> _widths;
-        private Spline _centreSpline;
-        private Spline _leftSpline;
-        private Spline _rightSpline;
         private Mesh _trackMesh;
-
-        public NativeArray<float2> GetCentreSplinePoints() => _centreSpline.GetPoints();
-        public float2 GetCentreSplinePoint(int i) => _centreSpline.GetPoint(i);
-        public float2 GetLeftSplinePoint(int i) => _leftSpline.GetPoint(i);
-        public float2 GetRightSplinePoint(int i) => _rightSpline.GetPoint(i);
 
         public void Init()
         {
             if(_init) return;
             _trackMesh = new Mesh {name = "Track Mesh"};
-            _centreSpline = new Spline(alpha);
-            _leftSpline = new Spline(alpha);
-            _rightSpline = new Spline(alpha);
+            centreSpline = new Spline(alpha);
+            leftSpline = new Spline(alpha);
+            rightSpline = new Spline(alpha);
             _init = true;
         }
         
@@ -53,19 +48,19 @@ namespace FearIndigo.Track
         private void OnValidate()
         {
             Init();
-            _centreSpline.alpha = alpha;
-            _leftSpline.alpha = alpha;
-            _rightSpline.alpha = alpha;
+            centreSpline.alpha = alpha;
+            leftSpline.alpha = alpha;
+            rightSpline.alpha = alpha;
             
             UpdateMeshes();
         }
         
         public void Dispose()
         {
-            _centreSpline.Dispose();
-            _leftSpline.Dispose();
-            _rightSpline.Dispose();
-            if(_widths.IsCreated) _widths.Dispose();
+            centreSpline.Dispose();
+            leftSpline.Dispose();
+            rightSpline.Dispose();
+            if(widths.IsCreated) widths.Dispose();
         }
         
         /// <summary>
@@ -79,10 +74,10 @@ namespace FearIndigo.Track
         {
             Init();
             Dispose();
-            _widths = new NativeArray<float>(newWidths, Allocator.Persistent);
-            _centreSpline.SetPoints(newPoints);
-            _leftSpline.SetPoints(GetOffCentreSplinePoints(true));
-            _rightSpline.SetPoints(GetOffCentreSplinePoints(false));
+            widths = new NativeArray<float>(newWidths, Allocator.Persistent);
+            centreSpline.SetPoints(newPoints);
+            leftSpline.SetPoints(GetOffCentreSplinePoints(true));
+            rightSpline.SetPoints(GetOffCentreSplinePoints(false));
             
             UpdateMeshes();
         }
@@ -95,12 +90,12 @@ namespace FearIndigo.Track
         /// <param name="left">Get points for left or right spline.</param>
         private float2[] GetOffCentreSplinePoints(bool left)
         {
-            var points = new float2[_centreSpline.NumPoints];
-            for (var i = 0; i < _centreSpline.NumPoints; i++)
+            var points = new float2[centreSpline.points.Length];
+            for (var i = 0; i < centreSpline.points.Length; i++)
             {
-                var p = _centreSpline.GetPoint(i);
-                var offset = _centreSpline.GetNormal(i/(float)_centreSpline.NumPoints) * _widths[i] / 2f;
-                points[i] = p + (left ? -offset : offset);
+                var p = centreSpline.points[i];
+                var offset = centreSpline.GetNormal(i/(float)centreSpline.points.Length) * widths[i] / 2f;
+                points[i] = p + (left ? offset : -offset);
             }
             return points;
         }
@@ -112,8 +107,8 @@ namespace FearIndigo.Track
         /// </summary>
         private void UpdateMeshes()
         {
-            UpdateEdgeLine(leftLine, _leftSpline);
-            UpdateEdgeLine(rightLine, _rightSpline);
+            UpdateEdgeLine(leftLine, leftSpline);
+            UpdateEdgeLine(rightLine, rightSpline);
             UpdateTrackMesh();
         }
 
@@ -126,7 +121,7 @@ namespace FearIndigo.Track
         /// <param name="spline"></param>
         private void UpdateEdgeLine(LineRenderer lineRenderer, Spline spline)
         {
-            if(spline.NumPoints < 4) return;
+            if(spline.points.Length < 4) return;
             
             lineRenderer.positionCount = resolution;
             for (var i = 0; i < resolution; i++)
@@ -143,7 +138,7 @@ namespace FearIndigo.Track
         /// </summary>
         private void UpdateTrackMesh()
         {
-            if(_centreSpline.NumPoints < 4) return;
+            if(centreSpline.points.Length < 4) return;
             
             var vertices = new Vector3[resolution * 2];
             var triangles = new int[resolution * 6];
@@ -153,8 +148,8 @@ namespace FearIndigo.Track
             {
                 // Vertices
                 var t0 = i / (float)resolution;
-                var left0 = _leftSpline.GetCurve(t0);
-                var right0 = _rightSpline.GetCurve(t0);
+                var left0 = leftSpline.GetCurve(t0);
+                var right0 = rightSpline.GetCurve(t0);
                 vertices[i * 2 + 0] = new Vector3(left0.x, left0.y, 0);
                 vertices[i * 2 + 1] = new Vector3(right0.x, right0.y, 0);
                 
@@ -170,8 +165,8 @@ namespace FearIndigo.Track
                 
                 // Physics shapes
                 var t1 = (i + 1) % resolution / (float)resolution;
-                var left1 = _leftSpline.GetCurve(t1);
-                var right1 = _rightSpline.GetCurve(t1);
+                var left1 = leftSpline.GetCurve(t1);
+                var right1 = rightSpline.GetCurve(t1);
                 shapeGroup.AddPolygon(new List<Vector2>
                 {
                     transform.TransformPoint((Vector2)left0),

@@ -14,25 +14,9 @@ namespace FearIndigo.Managers
         [HideInInspector] public Dictionary<ShipController, int> shipActiveCheckpointIds = new Dictionary<ShipController, int>();
         [HideInInspector] public List<CheckpointBase> checkpoints = new List<CheckpointBase>();
 
-        public Vector2 ActiveCheckpointDirection(ShipController ship)
-        {
-            return (Vector2)GetActiveCheckpoint(ship).transform.position - ship.rb.position;
-        }
-
-        public Vector2 NextActiveCheckpointDirection(ShipController ship)
-        {
-            var activeCheckpointId = GetActiveCheckpointId(ship);
-            return activeCheckpointId < checkpoints.Count - 1
-                ? (Vector2)checkpoints[activeCheckpointId + 1].transform.position - ship.rb.position
-                : Vector2.zero;
-        }
-
-        public Vector2 PreviousActiveCheckpointDirection(ShipController ship)
-        {
-            var activeCheckpointId = GetActiveCheckpointId(ship);
-            return (Vector2)checkpoints[(checkpoints.Count + activeCheckpointId - 1) % checkpoints.Count].transform.position - ship.rb.position;
-        }
-        public CheckpointBase GetActiveCheckpoint(ShipController ship) => checkpoints[GetActiveCheckpointId(ship)];
+        public Vector2 GetCheckpointDirection(ShipController ship, int activeCheckpointOffset) => (Vector2)GetCheckpoint(ship, activeCheckpointOffset).transform.position - ship.rb.position;
+        public CheckpointBase GetCheckpoint(ShipController ship, int activeCheckpointOffset) =>
+            checkpoints[(checkpoints.Count + GetActiveCheckpointId(ship) + activeCheckpointOffset) % checkpoints.Count];
 
         public int GetActiveCheckpointId(ShipController ship)
         {
@@ -58,20 +42,23 @@ namespace FearIndigo.Managers
             shipCheckpointSplits.Clear();
             shipActiveCheckpointIds.Clear();
             checkpoints.Clear();
-            
-            var positions = GameManager.trackManager.GetCentreSplinePoints();
+
+            var trackManager = GameManager.trackManager;
+            var positions = trackManager.GetCentreSplinePoints();
+            var widths = trackManager.GetWidths();
             for (var i = 0; i < positions.Length - 1; i++)
             {
                 var checkpoint = Instantiate(checkpointPrefab, transform);
                 var posIndex = i + 1;
                 var position = positions[posIndex];
-                checkpoint.Init(i, position);
-                checkpoint.UpdateLine(GameManager.trackManager.GetLeftSplinePoint(posIndex) - position, GameManager.trackManager.GetRightSplinePoint(posIndex) - position);
+                var t = posIndex / (float) positions.Length;
+                checkpoint.Init(i, position, widths[posIndex], trackManager.trackSpline.centreSpline.GetTangent(t));
+                checkpoint.UpdateLine(trackManager.trackSpline.leftSpline.points[posIndex] - position, trackManager.trackSpline.rightSpline.points[posIndex] - position);
                 checkpoints.Add(checkpoint);
             }
             var finishLine = Instantiate(finishLinePrefab, transform);
-            finishLine.Init(positions.Length - 1, positions[0]);
-            finishLine.UpdateLine(GameManager.trackManager.GetLeftSplinePoint(0) - positions[0], GameManager.trackManager.GetRightSplinePoint(0) - positions[0]);
+            finishLine.Init(positions.Length - 1, positions[0], widths[0], trackManager.trackSpline.centreSpline.GetTangent(0));
+            finishLine.UpdateLine(trackManager.trackSpline.leftSpline.points[0] - positions[0], trackManager.trackSpline.rightSpline.points[0] - positions[0]);
             checkpoints.Add(finishLine);
         }
 

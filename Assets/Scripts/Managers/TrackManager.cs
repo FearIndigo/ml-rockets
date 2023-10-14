@@ -12,15 +12,17 @@ namespace FearIndigo.Managers
         public TrackBuilderConfigSo trackConfig;
         public TrackSpline trackSpline;
 
+        public float[] GetWidths()
+        {
+            var widths = trackSpline.widths;
+            return widths.IsCreated ? widths.ToArray() : Array.Empty<float>();
+        }
         public float2[] GetCentreSplinePoints()
         {
-            var points = trackSpline.GetCentreSplinePoints();
+            var points = trackSpline.centreSpline.points;
             return points.IsCreated ? points.ToArray() : Array.Empty<float2>();
         }
-        public float2 GetCentreSplinePoint(int i) => trackSpline.GetCentreSplinePoint(i);
-        public float2 GetLeftSplinePoint(int i) => trackSpline.GetLeftSplinePoint(i);
-        public float2 GetRightSplinePoint(int i) => trackSpline.GetRightSplinePoint(i);
-        
+
         /// <summary>
         /// <para>
         /// Generate a new random seed.

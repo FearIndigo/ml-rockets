@@ -1,3 +1,4 @@
+using FearIndigo.Checkpoints;
 using FearIndigo.Managers;
 using FearIndigo.Sensors;
 using Unity.Mathematics;
@@ -24,14 +25,12 @@ namespace FearIndigo.Ship
 
         [Header("AI")]
         public float stepPunishment = -0.001f;
-        public float pFactor = 2f;
         public float maxVelocityObservation = 80f;
         public float maxAngularVelocityObservation = 350f;
         public float maxDistanceObservation = 200f;
 
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
-        private CustomRayPerceptionSensorComponent2D _raySensor;
 
         [HideInInspector] public Vector2 velocity;
         [HideInInspector] public float angularVelocity;
@@ -43,21 +42,13 @@ namespace FearIndigo.Ship
             
             _gameManager = GetComponentInParent<GameManager>();
             _behaviorParameters = GetComponent<BehaviorParameters>();
-            _raySensor = GetComponentInChildren<CustomRayPerceptionSensorComponent2D>();
             
             rb = GetComponent<Rigidbody2D>();
-            
-            _raySensor.DetectableObject = GetRaySensorObservedObject;
         }
         
         public void SetBehaviourType(BehaviorType behaviorType)
         {
             _behaviorParameters.BehaviorType = behaviorType;
-        }
-
-        public GameObject GetRaySensorObservedObject()
-        {
-            return _gameManager.checkpointManager.GetActiveCheckpoint(this).gameObject;
         }
         
         /// <summary>
@@ -75,14 +66,41 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalise(angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
             sensor.AddObservation(NormaliseRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Direction to active checkpoint (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.ActiveCheckpointDirection(this), maxDistanceObservation));
-            // Direction to next active checkpoint (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.NextActiveCheckpointDirection(this), maxDistanceObservation));
-            // Direction to previous active checkpoint (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.PreviousActiveCheckpointDirection(this), maxDistanceObservation));
+            // Active checkpoint -2 info (5 float)
+            ObserveCheckpointInfo(-2, sensor);
+            // Active checkpoint -1 info (5 float)
+            ObserveCheckpointInfo(-1, sensor);
+            // Active checkpoint +0 info (5 float)
+            ObserveCheckpointInfo(0, sensor);
+            // Active checkpoint +1 info (5 float)
+            ObserveCheckpointInfo(1, sensor);
+            // Active checkpoint +2 info (5 float)
+            ObserveCheckpointInfo(2, sensor);
+            
+            // 29 total
+        }
 
-            // 10 total
+        /// <summary>
+        /// <para>
+        /// Observe if checkpoint is finish line, direction to checkpoint, checkpoint width and checkpoint orientation.
+        /// </para>
+        /// </summary>
+        /// <param name="activeCheckpointOffset"></param>
+        /// <param name="sensor"></param>
+        private void ObserveCheckpointInfo(int activeCheckpointOffset, VectorSensor sensor)
+        {
+            var checkpoint = _gameManager.checkpointManager.GetCheckpoint(this, activeCheckpointOffset);
+
+            // Is finish line (1 float)
+            sensor.AddObservation(checkpoint is FinishLine);
+            // Direction (2 float)
+            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
+            // Width (1 float)
+            sensor.AddObservation(checkpoint.width / _gameManager.trackManager.trackConfig.data.maxTrackWidth);
+            // Orientation (1 float)
+            sensor.AddObservation(NormaliseRotation(checkpoint.rotation));
+            
+            // 5 total
         }
 
         private float NormaliseRotation(float input)
@@ -92,7 +110,7 @@ namespace FearIndigo.Ship
 
         private float Normalise(float input, float max)
         {
-            return Mathf.Sign(input) * (1f - Mathf.Pow(1f - Mathf.Clamp01(Mathf.Abs(input) / max), pFactor));
+            return Mathf.Clamp(input / max, -1f, 1f);
         }
 
         private Vector2 Normalise(Vector2 input, float max)

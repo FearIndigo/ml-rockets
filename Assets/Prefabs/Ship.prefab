@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc96918f348e49a183e02c7032dc51fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useNextActiveCheckpoint: 1
+  activeCheckpointOffset: 1
   spriteRenderer: {fileID: 8513671265597291111}
   fadeDistance:
     x: 5
@@ -219,125 +219,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &2186965599414335857
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1600761154823718516}
-  - component: {fileID: 1373861450595300267}
-  m_Layer: 3
-  m_Name: CustomRayPerceptionSensor2D
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1600761154823718516
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2186965599414335857}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3816154931880567168}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1373861450595300267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2186965599414335857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed170a6796af4ccd9e099d564f8702ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: CustomRayPerceptionSensor2D
-  m_RotateWithAgent: 0
-  m_RaycastHitBufferSize: 5
-  m_RaysPerDirection: 6
-  m_MaxRayDegrees: 166.15
-  m_SphereCastRadius: 1
-  m_RayLength: 20
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  m_ObservationStacks: 1
-  m_UseBatchedRaycasts: 0
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
---- !u!1 &2237591087501815648
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2735871211515188489}
-  - component: {fileID: 5927819492653184620}
-  m_Layer: 3
-  m_Name: GridSensor2D
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2735871211515188489
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2237591087501815648}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 3816154931880567168}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5927819492653184620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2237591087501815648}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f7b616f84dd4adfa8b83483845e2b90, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: GridSensor2D
-  m_CellScale: {x: 1, y: 1}
-  m_GridSize: {x: 25, y: 25}
-  m_RotateWithAgent: 0
-  m_AgentGameObject: {fileID: 9135016549219995015}
-  m_DetectableTags:
-  - Track
-  m_ColliderMask:
-    serializedVersion: 2
-    m_Bits: 1
-  m_MaxColliderBufferSize: 500
-  m_InitialColliderBufferSize: 4
-  m_DebugColors:
-  - {r: 0, g: 1, b: 0.054187775, a: 1}
-  m_ShowGizmos: 0
-  m_CompressionType: 1
-  m_ObservationStacks: 1
 --- !u!1 &6182312635382448276
 GameObject:
   m_ObjectHideFlags: 0
@@ -5211,7 +5092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc96918f348e49a183e02c7032dc51fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useNextActiveCheckpoint: 0
+  activeCheckpointOffset: 0
   spriteRenderer: {fileID: 5997862447096578007}
   fadeDistance:
     x: 5
@@ -5402,8 +5283,6 @@ Transform:
   - {fileID: 8751213956414705731}
   - {fileID: 7128265737542502326}
   - {fileID: 8535762198776425898}
-  - {fileID: 2735871211515188489}
-  - {fileID: 1600761154823718516}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5631927508277157399
@@ -5429,10 +5308,9 @@ MonoBehaviour:
   trail: {fileID: 1153344453147124743}
   thrustParticles: {fileID: 3688294887216310201}
   stepPunishment: -0.0005
-  pFactor: 3
   maxVelocityObservation: 100
   maxAngularVelocityObservation: 400
-  maxDistanceObservation: 200
+  maxDistanceObservation: 150
   velocity: {x: 0, y: 0}
   angularVelocity: 0
   rb: {fileID: 0}
@@ -5480,7 +5358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 10
+    VectorObservationSize: 29
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0

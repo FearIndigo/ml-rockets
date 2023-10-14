@@ -11,28 +11,24 @@ namespace FearIndigo.Splines
     public class Spline
     {
         [Range(0, 1)] public float alpha;
-        private NativeArray<float2> _points;
-
-        public int NumPoints => _points.Length;
-
-        public NativeArray<float2> GetPoints() => _points;
-        public float2 GetPoint(int i) => _points[i];
+        
+        [HideInInspector] public NativeArray<float2> points;
 
         public Spline(float alpha = 0.5f)
         {
             this.alpha = alpha;
-            _points = new NativeArray<float2>(0, Allocator.Persistent);
+            points = new NativeArray<float2>(0, Allocator.Persistent);
         }
 
         public void Dispose()
         {
-            if (_points.IsCreated) _points.Dispose();
+            if (points.IsCreated) points.Dispose();
         }
         
         public void SetPoints(float2[] newPoints)
         {
             Dispose();
-            _points = new NativeArray<float2>(newPoints, Allocator.Persistent);
+            points = new NativeArray<float2>(newPoints, Allocator.Persistent);
         }
 
         public float2 GetCurve(float t)
@@ -42,7 +38,7 @@ namespace FearIndigo.Splines
             {
                 T = t,
                 Alpha = alpha,
-                Points = _points,
+                Points = points,
                 Output = output,
             };
             getCurveJob.Schedule().Complete();
@@ -51,24 +47,29 @@ namespace FearIndigo.Splines
             return point;
         }
 
-        public float2 GetNormal(float t)
+        public float2 GetTangent(float t)
         {
             const float tOffset = 0.0001f;
             var p0 = GetCurve((1f + t - tOffset) % 1f);
-            var p2 = GetCurve((1f + t + tOffset) % 1f);
+            var p1 = GetCurve((1f + t + tOffset) % 1f);
 
-            var tangent = math.normalize(p0 - p2);
+            return math.normalize(p1 - p0);
+        }
+        
+        public float2 GetNormal(float t)
+        {
+            var tangent = GetTangent(t);
             return new float2(-tangent.y, tangent.x);
         }
 
         public int GetSegmentIndex(float t)
         {
-            return (int) (t * _points.Length);
+            return (int) (t * points.Length);
         }
 
         public float GetSegmentT(float t)
         {
-            return (t - (1f / _points.Length) * GetSegmentIndex(t)) / (1f / _points.Length);
+            return (t - (1f / points.Length) * GetSegmentIndex(t)) / (1f / points.Length);
         }
 
         [BurstCompile(CompileSynchronously = true)]
