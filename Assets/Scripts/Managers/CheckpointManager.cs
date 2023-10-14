@@ -93,7 +93,7 @@ namespace FearIndigo.Managers
             if (checkpointId >= checkpoints.Count) return;
             if(mainShip) checkpoints[checkpointId].SetState(CheckpointBase.State.Active);
             shipActiveCheckpointIds[ship] = checkpointId;
-            
+
             if (checkpointId >= checkpoints.Count - 1) return;
             if(mainShip) checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
         }

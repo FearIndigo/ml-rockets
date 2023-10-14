@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9098194236476836940}
   - component: {fileID: 6781208390177109422}
   - component: {fileID: 6375739939332349406}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Checkpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,6 +55,20 @@ MonoBehaviour:
   activeColor: {r: 0, g: 1, b: 0.054187775, a: 1}
   nextActiveColor: {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   inactiveColor: {r: 0.851, g: 0.30582815, b: 0.27923438, a: 0.5019608}
+  contactFilter:
+    useTriggers: 0
+    useLayerMask: 0
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
 --- !u!120 &6781208390177109422
 LineRenderer:
   serializedVersion: 2

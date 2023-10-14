@@ -1,5 +1,5 @@
-using FearIndigo.Checkpoints;
 using FearIndigo.Managers;
+using FearIndigo.Sensors;
 using Unity.Mathematics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -28,12 +28,11 @@ namespace FearIndigo.Ship
         public float maxVelocityObservation = 80f;
         public float maxAngularVelocityObservation = 350f;
         public float maxDistanceObservation = 200f;
-        
+
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
-        private ContactFilter2D _checkpointHitContactFilter2D = new ContactFilter2D();
-        private RaycastHit2D[] _hits;
-        
+        private CustomRayPerceptionSensorComponent2D _raySensor;
+
         [HideInInspector] public Vector2 velocity;
         [HideInInspector] public float angularVelocity;
         [HideInInspector] public Rigidbody2D rb;
@@ -44,51 +43,23 @@ namespace FearIndigo.Ship
             
             _gameManager = GetComponentInParent<GameManager>();
             _behaviorParameters = GetComponent<BehaviorParameters>();
-            _hits = new RaycastHit2D[_gameManager.shipManager.numShips];
+            _raySensor = GetComponentInChildren<CustomRayPerceptionSensorComponent2D>();
             
             rb = GetComponent<Rigidbody2D>();
-
-            _checkpointHitContactFilter2D = _checkpointHitContactFilter2D.NoFilter();
-            _checkpointHitContactFilter2D.layerMask = (1 << gameObject.layer);
+            
+            _raySensor.DetectableObject = GetRaySensorObservedObject;
         }
         
         public void SetBehaviourType(BehaviorType behaviorType)
         {
             _behaviorParameters.BehaviorType = behaviorType;
         }
-        
-        /// <summary>
-        /// <para>
-        /// Cast checkpoint shape from checkpoint origin in the opposite direction of the ships velocity.
-        /// Observe if this ship was detected and the hit distance.
-        /// </para>
-        /// </summary>
-        /// <param name="sensor"></param>
-        public void AddCheckpointHitObservation(VectorSensor sensor)
+
+        public GameObject GetRaySensorObservedObject()
         {
-            var wasHit = false;
-            var distance = 0f;
-            
-            var activeCheckpoint = _gameManager.checkpointManager.GetActiveCheckpoint(this) as Checkpoint;
-            if (activeCheckpoint)
-            {
-                var direction = -velocity.normalized;
-                var numHits = activeCheckpoint.edgeCollider.Cast(direction, _checkpointHitContactFilter2D, _hits, maxDistanceObservation);
-                for (var i = 0; i < numHits; i++)
-                {
-                    var hit = _hits[i];
-                    if(hit.rigidbody != rb) continue;
-
-                    wasHit = true;
-                    distance = Normalise(hit.distance, maxDistanceObservation);
-                    break;
-                }
-            }
-
-            sensor.AddObservation(wasHit);
-            sensor.AddObservation(distance);
+            return _gameManager.checkpointManager.GetActiveCheckpoint(this).gameObject;
         }
-
+        
         /// <summary>
         /// <para>
         /// Collect the vector observations of the agent for the step. The agent observation describes the current
@@ -110,10 +81,8 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalise(_gameManager.checkpointManager.NextActiveCheckpointDirection(this), maxDistanceObservation));
             // Direction to previous active checkpoint (2 float)
             sensor.AddObservation(Normalise(_gameManager.checkpointManager.PreviousActiveCheckpointDirection(this), maxDistanceObservation));
-            // Estimate if the current velocity will collide with the active checkpoint (2 float)
-            AddCheckpointHitObservation(sensor);
 
-            // 12 total
+            // 10 total
         }
 
         private float NormaliseRotation(float input)
