@@ -12,16 +12,22 @@ namespace FearIndigo.Sensors
 
         [Header("Sensor")]
         public CameraSensorComponent sensor;
+        public float pixelWidth = 2f;
         
         private Camera _camera;
         
         private void Awake()
         {
             _camera = GetComponent<Camera>();
-            _camera.aspect = sensor.Width / (float)sensor.Height;
             
             transform.parent = null;
             transform.rotation = Quaternion.identity;
+        }
+
+        private void Start()
+        {
+            _camera.aspect = sensor.Width / (float)sensor.Height;
+            _camera.orthographicSize = pixelWidth * (sensor.Width / 2f);
         }
 
         private void FixedUpdate()

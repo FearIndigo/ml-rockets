@@ -7,6 +7,7 @@ namespace FearIndigo.Checkpoints
 {
     public class CheckpointPointer : MonoBehaviour
     {
+        public bool hideIfActiveIsFinishLine;
         public int activeCheckpointOffset;
         public SpriteRenderer spriteRenderer;
         public float2 fadeDistance;
@@ -30,9 +31,17 @@ namespace FearIndigo.Checkpoints
 
         private void LateUpdate()
         {
-            var checkpointDirection = _gameManager.checkpointManager.GetCheckpointDirection(_ship, activeCheckpointOffset);
-            transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
-            _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
+            if (hideIfActiveIsFinishLine && _gameManager.checkpointManager.GetCheckpoint(_ship, 0) is FinishLine)
+            {
+                _color.a = 0f;
+            }
+            else
+            {
+                var checkpointDirection = _gameManager.checkpointManager.GetCheckpointDirection(_ship, activeCheckpointOffset);
+                transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
+                _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
+            }
+            
             spriteRenderer.color = _color;
         }
     }

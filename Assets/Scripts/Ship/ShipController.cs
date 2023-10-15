@@ -75,38 +75,16 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalise(angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
             sensor.AddObservation(NormaliseRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Active checkpoint -1 info (2 float)
-            ObserveCheckpointInfo(-1, sensor);
-            // Active checkpoint +0 info (3 float)
-            ObserveCheckpointInfo(0, sensor);
-            // Active checkpoint +1 info (3 float)
-            ObserveCheckpointInfo(1, sensor);
-            // Active checkpoint +2 info (3 float)
-            ObserveCheckpointInfo(2, sensor);
-            
-            // 15 total
-        }
+            // Active checkpoint -1 direction (2 float)
+            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
+            // Active checkpoint +0 direction (2 float)
+            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, 0), maxDistanceObservation));
+            // Active checkpoint +1 direction (2 float) [zero value if active checkpoint is finish line]
+            sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
+                ? Vector2.zero
+                : Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
 
-        /// <summary>
-        /// <para>
-        /// Observe if checkpoint is finish line (when observing active checkpoint or ahead) and direction to checkpoint.
-        /// </para>
-        /// </summary>
-        /// <param name="activeCheckpointOffset"></param>
-        /// <param name="sensor"></param>
-        private void ObserveCheckpointInfo(int activeCheckpointOffset, VectorSensor sensor)
-        {
-            var checkpoint = _gameManager.checkpointManager.GetCheckpoint(this, activeCheckpointOffset);
-
-            if (activeCheckpointOffset >= 0)
-            {
-                // Is finish line (1 float)
-                sensor.AddObservation(checkpoint is FinishLine);
-            }
-            // Direction (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
-
-            // 2 or 3 total
+            // 10 total
         }
 
         private float NormaliseRotation(float input)

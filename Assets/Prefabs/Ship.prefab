@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc96918f348e49a183e02c7032dc51fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hideIfActiveIsFinishLine: 1
   activeCheckpointOffset: 1
   spriteRenderer: {fileID: 8513671265597291111}
   fadeDistance:
@@ -260,7 +261,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3269897328014071706}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -297,8 +298,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 1
-  m_AllowMSAA: 1
+  m_HDR: 0
+  m_AllowMSAA: 0
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 0
@@ -363,6 +364,7 @@ MonoBehaviour:
   target: {fileID: 6718346088288863038}
   targetOffset: {x: 0, y: 0, z: -5}
   sensor: {fileID: 770948834867982561}
+  pixelWidth: 2
 --- !u!1 &4870567136127501165
 GameObject:
   m_ObjectHideFlags: 0
@@ -415,7 +417,7 @@ MonoBehaviour:
   m_ObservationType: 0
   m_RuntimeCameraEnable: 0
   m_ObservationStacks: 1
-  m_Compression: 1
+  m_Compression: 0
 --- !u!1 &6182312635382448276
 GameObject:
   m_ObjectHideFlags: 0
@@ -5347,6 +5349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc96918f348e49a183e02c7032dc51fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hideIfActiveIsFinishLine: 0
   activeCheckpointOffset: 0
   spriteRenderer: {fileID: 5997862447096578007}
   fadeDistance:
@@ -5587,7 +5590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 20000
+  NumStepsToRecord: 25000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673
@@ -5618,7 +5621,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 15
+    VectorObservationSize: 10
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
