@@ -5566,6 +5566,7 @@ MonoBehaviour:
   trail: {fileID: 1153344453147124743}
   thrustParticles: {fileID: 3688294887216310201}
   stepPunishment: -0.0005
+  pFactor: 3
   maxVelocityObservation: 100
   maxAngularVelocityObservation: 400
   maxDistanceObservation: 150
@@ -5617,7 +5618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 19
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
