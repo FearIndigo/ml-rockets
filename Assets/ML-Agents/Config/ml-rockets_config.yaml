@@ -4,7 +4,7 @@ behaviors:
     hyperparameters:
       learning_rate: 0.0003
       learning_rate_schedule: constant
-      batch_size: 256
+      batch_size: 512
       buffer_size: 2000000
       buffer_init_steps: 5000
       tau: 0.01
@@ -16,7 +16,7 @@ behaviors:
       normalize: false
       hidden_units: 256
       num_layers: 3
-      vis_encode_type: simple
+      vis_encode_type: fully_connected
     reward_signals:
       extrinsic:
         gamma: 0.995
@@ -28,6 +28,8 @@ behaviors:
         use_actions: true
         use_vail: false
         demo_path: Assets/ML-Agents/Demonstrations/ShipBehaviorDemo.demo
+        network_settings:
+          vis_encode_type: fully_connected
     threaded: true
     keep_checkpoints: 5
     max_steps: 10000000

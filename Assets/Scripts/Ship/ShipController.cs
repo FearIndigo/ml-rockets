@@ -28,6 +28,7 @@ namespace FearIndigo.Ship
         public float maxVelocityObservation = 80f;
         public float maxAngularVelocityObservation = 350f;
         public float maxDistanceObservation = 200f;
+        public CustomRayPerceptionSensorComponent2D raySensor;
 
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
@@ -44,6 +45,13 @@ namespace FearIndigo.Ship
             _behaviorParameters = GetComponent<BehaviorParameters>();
             
             rb = GetComponent<Rigidbody2D>();
+
+            raySensor.DetectableObject = GetRaySensorDetectableObject;
+        }
+
+        private GameObject GetRaySensorDetectableObject()
+        {
+            return _gameManager.checkpointManager.GetCheckpoint(this, 0).gameObject;
         }
         
         public void SetBehaviourType(BehaviorType behaviorType)
@@ -66,23 +74,23 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalise(angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
             sensor.AddObservation(NormaliseRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Active checkpoint -2 info (5 float)
+            // Active checkpoint -2 info (3 float)
             ObserveCheckpointInfo(-2, sensor);
-            // Active checkpoint -1 info (5 float)
+            // Active checkpoint -1 info (3 float)
             ObserveCheckpointInfo(-1, sensor);
-            // Active checkpoint +0 info (5 float)
+            // Active checkpoint +0 info (3 float)
             ObserveCheckpointInfo(0, sensor);
-            // Active checkpoint +1 info (5 float)
+            // Active checkpoint +1 info (3 float)
             ObserveCheckpointInfo(1, sensor);
-            // Active checkpoint +2 info (5 float)
+            // Active checkpoint +2 info (3 float)
             ObserveCheckpointInfo(2, sensor);
             
-            // 29 total
+            // 19 total
         }
 
         /// <summary>
         /// <para>
-        /// Observe if checkpoint is finish line, direction to checkpoint, checkpoint width and checkpoint orientation.
+        /// Observe if checkpoint is finish line and direction to checkpoint.
         /// </para>
         /// </summary>
         /// <param name="activeCheckpointOffset"></param>
@@ -95,12 +103,8 @@ namespace FearIndigo.Ship
             sensor.AddObservation(checkpoint is FinishLine);
             // Direction (2 float)
             sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
-            // Width (1 float)
-            sensor.AddObservation(checkpoint.width / _gameManager.trackManager.trackConfig.data.maxTrackWidth);
-            // Orientation (1 float)
-            sensor.AddObservation(NormaliseRotation(checkpoint.rotation));
-            
-            // 5 total
+
+            // 3 total
         }
 
         private float NormaliseRotation(float input)
