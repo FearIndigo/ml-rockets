@@ -1,4 +1,3 @@
-using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 namespace FearIndigo.Sensors
@@ -11,11 +10,11 @@ namespace FearIndigo.Sensors
         public Vector3 targetOffset;
 
         [Header("Sensor")]
-        public CameraSensorComponent sensor;
-        public float pixelWidth = 2f;
+        public CustomRenderTextureSensorComponent sensor;
+        public float pixelWidth = 1.5f;
         
         private Camera _camera;
-        
+
         private void Awake()
         {
             _camera = GetComponent<Camera>();
@@ -26,13 +25,26 @@ namespace FearIndigo.Sensors
 
         private void Start()
         {
-            _camera.aspect = sensor.Width / (float)sensor.Height;
-            _camera.orthographicSize = pixelWidth * (sensor.Width / 2f);
+            _camera.aspect = sensor.TextureSize.x / (float)sensor.TextureSize.y;
+            _camera.orthographicSize = pixelWidth * (sensor.TextureSize.x / 2f);
+            _camera.targetTexture = sensor.RenderTexture;
         }
 
         private void FixedUpdate()
         {
             transform.position = (Vector3)target.position + targetOffset;
+
+            RenderCamera();
+        }
+
+        private void RenderCamera()
+        {
+            var prevRt = RenderTexture.active;
+            RenderTexture.active = _camera.targetTexture;
+            
+            _camera.Render();
+
+            RenderTexture.active = prevRt;
         }
     }
 }

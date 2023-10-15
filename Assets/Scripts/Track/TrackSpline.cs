@@ -13,10 +13,6 @@ namespace FearIndigo.Track
         public float alpha = 0.5f;
         public int resolution = 64;
 
-        [Header("Track Lines")]
-        public LineRenderer leftLine;
-        public LineRenderer rightLine;
-        
         [Header("Track Mesh")]
         public MeshFilter meshFilter;
         public MeshFilter observationMeshFilter;
@@ -53,7 +49,7 @@ namespace FearIndigo.Track
             leftSpline.alpha = alpha;
             rightSpline.alpha = alpha;
             
-            UpdateMeshes();
+            UpdateTrackMesh();
         }
         
         public void Dispose()
@@ -80,7 +76,7 @@ namespace FearIndigo.Track
             leftSpline.SetPoints(GetOffCentreSplinePoints(true));
             rightSpline.SetPoints(GetOffCentreSplinePoints(false));
             
-            UpdateMeshes();
+            UpdateTrackMesh();
         }
         
         /// <summary>
@@ -99,37 +95,6 @@ namespace FearIndigo.Track
                 points[i] = p + (left ? offset : -offset);
             }
             return points;
-        }
-
-        /// <summary>
-        /// <para>
-        /// Update meshes for track.
-        /// </para>
-        /// </summary>
-        private void UpdateMeshes()
-        {
-            UpdateEdgeLine(leftLine, leftSpline);
-            UpdateEdgeLine(rightLine, rightSpline);
-            UpdateTrackMesh();
-        }
-
-        /// <summary>
-        /// <para>
-        /// Update edge line renderer positions from spline.
-        /// </para>
-        /// </summary>
-        /// <param name="lineRenderer"></param>
-        /// <param name="spline"></param>
-        private void UpdateEdgeLine(LineRenderer lineRenderer, Spline spline)
-        {
-            if(spline.points.Length < 4) return;
-            
-            lineRenderer.positionCount = resolution;
-            for (var i = 0; i < resolution; i++)
-            {
-                var point = spline.GetCurve(i/(float)resolution);
-                lineRenderer.SetPosition(i, new Vector3(point.x, point.y, 0));
-            }
         }
 
         /// <summary>

@@ -334,7 +334,7 @@ MonoBehaviour:
   m_StopNaN: 0
   m_Dithering: 0
   m_ClearDepth: 1
-  m_AllowXRRendering: 1
+  m_AllowXRRendering: 0
   m_AllowHDROutput: 1
   m_UseScreenCoordOverride: 0
   m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
@@ -363,8 +363,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 6718346088288863038}
   targetOffset: {x: 0, y: 0, z: -5}
-  sensor: {fileID: 770948834867982561}
-  pixelWidth: 2
+  sensor: {fileID: 3351500350631553609}
+  pixelWidth: 1.5
 --- !u!1 &4870567136127501165
 GameObject:
   m_ObjectHideFlags: 0
@@ -374,9 +374,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5605942788672340346}
-  - component: {fileID: 770948834867982561}
+  - component: {fileID: 3351500350631553609}
   m_Layer: 0
-  m_Name: CameraSensor
+  m_Name: RenderTextureSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -397,7 +397,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3816154931880567168}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &770948834867982561
+--- !u!114 &3351500350631553609
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,18 +406,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4870567136127501165}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
+  m_Script: {fileID: 11500000, guid: 7c02510c7f5940809b1bbf3de0c9615d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Camera: {fileID: 9098017464940332347}
-  m_SensorName: CameraSensor
-  m_Width: 10
-  m_Height: 10
+  m_TextureSize: {x: 20, y: 20}
+  m_SensorName: RenderTextureSensor
   m_Grayscale: 1
-  m_ObservationType: 0
-  m_RuntimeCameraEnable: 0
   m_ObservationStacks: 1
-  m_Compression: 0
+  m_Compression: 1
 --- !u!1 &6182312635382448276
 GameObject:
   m_ObjectHideFlags: 0
@@ -5295,8 +5291,8 @@ MonoBehaviour:
   m_RaycastHitBufferSize: 5
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1
-  m_RayLength: 20
+  m_SphereCastRadius: 1.5
+  m_RayLength: 15
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 64
