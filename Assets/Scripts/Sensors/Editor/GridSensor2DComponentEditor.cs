@@ -29,8 +29,7 @@ namespace FearIndigo.Sensors.Editor
                 gridSize.vector2IntValue = new Vector2Int(newGridSize.x, newGridSize.y);
             }
             EditorGUI.EndDisabledGroup();
-            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensor2DComponent.m_AgentGameObject)), true);
-            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensor2DComponent.m_RotateWithAgent)), true);
+            EditorGUILayout.PropertyField(so.FindProperty(nameof(GridSensor2DComponent.m_AgentRigidbody)), true);
 
             EditorGUI.BeginDisabledGroup(Application.isPlaying);
             {

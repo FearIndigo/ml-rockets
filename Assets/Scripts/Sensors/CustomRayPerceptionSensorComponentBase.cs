@@ -35,20 +35,15 @@ namespace FearIndigo.Sensors
             set { m_DetectableObject = value; UpdateSensor(); }
         }
 
-        [SerializeField]
-        [Tooltip("Whether the orientation should follow the agent.")]
-        bool m_RotateWithAgent;
-
-        /// <summary>
-        /// List of tags in the scene to compare against.
-        /// Note that this should not be changed at runtime.
-        /// </summary>
-        public bool RotateWithAgent
-        {
-            get { return m_RotateWithAgent; }
-            set { m_RotateWithAgent = value; UpdateSensor(); }
-        }
+        [HideInInspector, SerializeField]
+        private Rigidbody2D m_AgentRigidbody;
         
+        public Rigidbody2D AgentRigidbody
+        {
+            get { return m_AgentRigidbody; }
+            set { m_AgentRigidbody = value; UpdateSensor(); }
+        }
+
         [SerializeField]
         [Tooltip("Max number of raycast hits to store in the buffer.")]
         int m_RaycastHitBufferSize;
@@ -272,12 +267,11 @@ namespace FearIndigo.Sensors
             var rayPerceptionInput = new CustomRayPerceptionInput();
             rayPerceptionInput.RayLength = RayLength;
             rayPerceptionInput.DetectableObject = DetectableObject;
-            rayPerceptionInput.RotateWithAgent = RotateWithAgent;
+            rayPerceptionInput.AgentRigidbody = AgentRigidbody;
             rayPerceptionInput.Angles = GetRayAngles(RaysPerDirection, MaxRayDegrees);
             rayPerceptionInput.StartOffset = GetStartVerticalOffset();
             rayPerceptionInput.EndOffset = GetEndVerticalOffset();
             rayPerceptionInput.CastRadius = SphereCastRadius;
-            rayPerceptionInput.Transform = transform;
             rayPerceptionInput.CastType = GetCastType();
             rayPerceptionInput.LayerMask = RayLayerMask;
             rayPerceptionInput.UseBatchedRaycasts = UseBatchedRaycasts;

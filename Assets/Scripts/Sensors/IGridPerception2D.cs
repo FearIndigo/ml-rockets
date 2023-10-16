@@ -7,12 +7,6 @@ namespace FearIndigo.Sensors
     /// </summary>
     internal interface IGridPerception2D
     {
-        bool RotateWithAgent
-        {
-            get;
-            set;
-        }
-
         LayerMask ColliderMask
         {
             get;
@@ -31,8 +25,6 @@ namespace FearIndigo.Sensors
         /// <returns>Vector2 of the position of the center of the cell in world space</returns>
         /// <param name="cellIndex">The index of the cell</param>
         Vector2 GetCellGlobalPosition(int cellIndex);
-
-        float GetGridRotation();
 
         /// <summary>
         /// Perceive the latest grid status. Detect colliders for each cell, parse the collider arrays,

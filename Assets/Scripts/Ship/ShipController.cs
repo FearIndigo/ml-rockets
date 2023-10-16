@@ -69,22 +69,47 @@ namespace FearIndigo.Ship
         /// <param name="sensor">The vector observations for the agent.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            // Ship velocity (2 float)
-            sensor.AddObservation(Normalise(velocity, maxVelocityObservation));
+            // Ship velocity/orientation (3 float)
+            ObserveDirection(velocity, maxVelocityObservation, sensor);
             // Ship angular velocity (1 float)
             sensor.AddObservation(Normalise(angularVelocity, maxAngularVelocityObservation));
-            // Ship orientation (1 float)
-            sensor.AddObservation(NormaliseRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Active checkpoint -1 direction (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
-            // Active checkpoint +0 direction (2 float)
-            sensor.AddObservation(Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, 0), maxDistanceObservation));
-            // Active checkpoint +1 direction (2 float) [zero value if active checkpoint is finish line]
-            sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
+            // Ship orientation (2 float)
+            sensor.AddObservation((Vector2)(Quaternion.Euler(0,0,rb.rotation).normalized * Vector3.up));
+            // Active checkpoint -1 direction (3 float)
+            ObserveDirection(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation, sensor);
+            // Active checkpoint +0 direction (3 float)
+            ObserveDirection(_gameManager.checkpointManager.GetCheckpointDirection(this, 0), maxDistanceObservation, sensor);
+            // Active checkpoint +1 direction (3 float) [zero value if active checkpoint is finish line]
+            var direction = _gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
                 ? Vector2.zero
-                : Normalise(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
+                : _gameManager.checkpointManager.GetCheckpointDirection(this, -1);
+            ObserveDirection(direction, maxDistanceObservation, sensor);
 
-            // 10 total
+            // 15 total
+        }
+
+        /// <summary>
+        /// <para>
+        /// Observe normalised direction and direction magnitude.
+        /// </para>
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="max"></param>
+        /// <param name="sensor"></param>
+        private void ObserveDirection(Vector2 direction, float max, VectorSensor sensor)
+        {
+            if (direction == Vector2.zero)
+            {
+                sensor.AddObservation(direction);
+                sensor.AddObservation(0f);
+            }
+            else
+            {
+                sensor.AddObservation(direction.normalized);
+                sensor.AddObservation(Normalise(direction.magnitude, max));
+            }
+            
+            // 3 total
         }
 
         private float NormaliseRotation(float input)
@@ -177,14 +202,15 @@ namespace FearIndigo.Ship
         /// </para>
         /// </summary>
         /// <param name="position"></param>
-        public void Teleport(float2 position)
+        public void Teleport(Vector2 position)
         {
-            transform.localPosition = new Vector3(position.x, position.y, 0);
-            transform.rotation = Quaternion.identity;
-            rb.MovePosition(transform.position);
-            rb.SetRotation(0);
+            var t = transform;
+            t.localPosition = position;
+            t.rotation = Quaternion.identity;
+            rb.position = t.position;
+            rb.rotation = 0f;
             velocity = Vector2.zero;
-            angularVelocity = 0;
+            angularVelocity = 0f;
             trail.Clear();
         }
     }

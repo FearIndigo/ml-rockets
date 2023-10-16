@@ -11,10 +11,8 @@ namespace FearIndigo.Sensors
     {
         Vector2 m_CellScale;
         Vector2Int m_GridSize;
-        bool m_RotateWithAgent;
         LayerMask m_ColliderMask;
-        GameObject m_CenterObject;
-        GameObject m_AgentGameObject;
+        Rigidbody2D m_AgentRigidbody;
         string[] m_DetectableTags;
         int m_InitialColliderBufferSize;
         int m_MaxColliderBufferSize;
@@ -33,20 +31,16 @@ namespace FearIndigo.Sensors
         public BoxOverlap2DChecker(
             Vector2 cellScale,
             Vector2Int gridSize,
-            bool rotateWithAgent,
             LayerMask colliderMask,
-            GameObject centerObject,
-            GameObject agentGameObject,
+            Rigidbody2D agentRigidbody,
             string[] detectableTags,
             int initialColliderBufferSize,
             int maxColliderBufferSize)
         {
             m_CellScale = cellScale;
             m_GridSize = gridSize;
-            m_RotateWithAgent = rotateWithAgent;
             m_ColliderMask = colliderMask;
-            m_CenterObject = centerObject;
-            m_AgentGameObject = agentGameObject;
+            m_AgentRigidbody = agentRigidbody;
             m_DetectableTags = detectableTags;
             m_InitialColliderBufferSize = initialColliderBufferSize;
             m_MaxColliderBufferSize = maxColliderBufferSize;
@@ -57,12 +51,6 @@ namespace FearIndigo.Sensors
             m_ColliderBuffer = new Collider2D[Math.Min(m_MaxColliderBufferSize, m_InitialColliderBufferSize)];
 
             InitCellLocalPositions();
-        }
-
-        public bool RotateWithAgent
-        {
-            get { return m_RotateWithAgent; }
-            set { m_RotateWithAgent = value; }
         }
 
         public LayerMask ColliderMask
@@ -93,19 +81,7 @@ namespace FearIndigo.Sensors
 
         public Vector2 GetCellGlobalPosition(int cellIndex)
         {
-            if (m_RotateWithAgent)
-            {
-                return m_CenterObject.transform.TransformPoint(m_CellLocalPositions[cellIndex]);
-            }
-            else
-            {
-                return m_CellLocalPositions[cellIndex] + (Vector2)m_CenterObject.transform.position;
-            }
-        }
-
-        public float GetGridRotation()
-        {
-            return m_RotateWithAgent ? m_CenterObject.transform.rotation.eulerAngles.z : 0;
+            return m_CellLocalPositions[cellIndex] + m_AgentRigidbody.position;
         }
 
         public void Perceive()
@@ -113,7 +89,7 @@ namespace FearIndigo.Sensors
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
             {
                 var cellCenter = GetCellGlobalPosition(cellIndex);
-                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
+                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale);
 
                 if (GridOverlapDetectedAll != null)
                 {
@@ -131,7 +107,7 @@ namespace FearIndigo.Sensors
             for (var cellIndex = 0; cellIndex < m_NumCells; cellIndex++)
             {
                 var cellCenter = GetCellGlobalPosition(cellIndex);
-                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale, GetGridRotation());
+                var numFound = BufferResizingOverlapBoxNonAlloc(cellCenter, m_HalfCellScale);
 
                 ParseCollidersClosest(m_ColliderBuffer, numFound, cellIndex, cellCenter, GridOverlapDetectedDebug);
             }
@@ -145,14 +121,14 @@ namespace FearIndigo.Sensors
         /// <param name="halfCellScale"></param>
         /// <param name="angle"></param>
         /// <returns></returns>
-        int BufferResizingOverlapBoxNonAlloc(Vector2 cellCenter, Vector2 halfCellScale, float angle)
+        int BufferResizingOverlapBoxNonAlloc(Vector2 cellCenter, Vector2 halfCellScale)
         {
             int numFound;
             // Since we can only get a fixed number of results, requery
             // until we're sure we can hold them all (or until we hit the max size).
             while (true)
             {
-                numFound = Physics2D.OverlapBoxNonAlloc(cellCenter, halfCellScale, angle, m_ColliderBuffer, m_ColliderMask);
+                numFound = Physics2D.OverlapBoxNonAlloc(cellCenter, halfCellScale, 0, m_ColliderBuffer, m_ColliderMask);
                 if (numFound == m_ColliderBuffer.Length && m_ColliderBuffer.Length < m_MaxColliderBufferSize)
                 {
                     m_ColliderBuffer = new Collider2D[Math.Min(m_MaxColliderBufferSize, m_ColliderBuffer.Length * 2)];
@@ -178,14 +154,8 @@ namespace FearIndigo.Sensors
             {
                 var currentColliderGo = foundColliders[i].gameObject;
 
-                // Continue if the current collider go is the root reference
-                if (ReferenceEquals(currentColliderGo, m_AgentGameObject))
-                {
-                    continue;
-                }
-
                 var closestColliderPoint = foundColliders[i].ClosestPoint(cellCenter);
-                var currentDistanceSquared = (closestColliderPoint - (Vector2)m_CenterObject.transform.position).sqrMagnitude;
+                var currentDistanceSquared = (closestColliderPoint - m_AgentRigidbody.position).sqrMagnitude;
 
                 if (currentDistanceSquared >= minDistanceSquared)
                 {
@@ -222,11 +192,7 @@ namespace FearIndigo.Sensors
         {
             for (int i = 0; i < numFound; i++)
             {
-                var currentColliderGo = foundColliders[i].gameObject;
-                if (!ReferenceEquals(currentColliderGo, m_AgentGameObject))
-                {
-                    detectedAction.Invoke(currentColliderGo, cellIndex);
-                }
+                detectedAction.Invoke(foundColliders[i].gameObject, cellIndex);
             }
         }
 

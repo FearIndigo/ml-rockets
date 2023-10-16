@@ -50,25 +50,15 @@ namespace FearIndigo.Sensors
             set { m_GridSize = value; }
         }
 
-        [HideInInspector, SerializeField] public bool m_RotateWithAgent = true;
-        /// <summary>
-        /// Rotate the grid based on the direction the agent is facing.
-        /// </summary>
-        public bool RotateWithAgent
-        {
-            get { return m_RotateWithAgent; }
-            set { m_RotateWithAgent = value; }
-        }
-
-        [HideInInspector, SerializeField] public GameObject m_AgentGameObject;
+        [HideInInspector, SerializeField] public Rigidbody2D m_AgentRigidbody;
         /// <summary>
         /// The reference of the root of the agent. This is used to disambiguate objects with
         /// the same tag as the agent. Defaults to current GameObject.
         /// </summary>
-        public GameObject AgentGameObject
+        public Rigidbody2D AgentRigidbody
         {
-            get { return (m_AgentGameObject == null ? gameObject : m_AgentGameObject); }
-            set { m_AgentGameObject = value; }
+            get { return m_AgentRigidbody; }
+            set { m_AgentRigidbody = value; }
         }
 
         [HideInInspector, SerializeField] public string[] m_DetectableTags;
@@ -168,10 +158,8 @@ namespace FearIndigo.Sensors
             m_GridPerception = new BoxOverlap2DChecker(
                 m_CellScale,
                 m_GridSize,
-                m_RotateWithAgent,
                 m_ColliderMask,
-                gameObject,
-                AgentGameObject,
+                AgentRigidbody,
                 m_DetectableTags,
                 m_InitialColliderBufferSize,
                 m_MaxColliderBufferSize
@@ -230,7 +218,6 @@ namespace FearIndigo.Sensors
         {
             if (m_Sensors != null)
             {
-                m_GridPerception.RotateWithAgent = m_RotateWithAgent;
                 m_GridPerception.ColliderMask = m_ColliderMask;
                 foreach (var sensor in m_Sensors)
                 {
@@ -251,14 +238,13 @@ namespace FearIndigo.Sensors
                 m_DebugSensor.ResetPerceptionBuffer();
                 m_GridPerception.UpdateGizmo();
                 var cellColors = m_DebugSensor.PerceptionBuffer;
-                var rotation = m_GridPerception.GetGridRotation();
 
                 var scale = new Vector3(m_CellScale.x, m_CellScale.y, 1);
                 var oldGizmoMatrix = Gizmos.matrix;
                 for (var i = 0; i < m_DebugSensor.PerceptionBuffer.Length; i++)
                 {
                     var cellPosition = m_GridPerception.GetCellGlobalPosition(i);
-                    var cubeTransform = Matrix4x4.TRS(cellPosition, Quaternion.Euler(0,0,rotation), scale);
+                    var cubeTransform = Matrix4x4.TRS(cellPosition, Quaternion.identity, scale);
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     var colorIndex = cellColors[i] - 1;
                     var debugRayColor = Color.white;

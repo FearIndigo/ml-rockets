@@ -44,7 +44,7 @@ namespace FearIndigo.Sensors
         /// <summary>
         /// Whether the orientation should follow the agent.
         /// </summary>
-        public bool RotateWithAgent;
+        public Rigidbody2D AgentRigidbody;
 
         /// <summary>
         /// List of angles (in degrees) used to define the rays.
@@ -67,11 +67,6 @@ namespace FearIndigo.Sensors
         /// If 0 or less, rays are used instead - this may be faster, especially for complex environments.
         /// </summary>
         public float CastRadius;
-
-        /// <summary>
-        /// Transform of the GameObject.
-        /// </summary>
-        public Transform Transform;
 
         /// <summary>
         /// Whether to perform the casts in 2D or 3D.
@@ -118,13 +113,10 @@ namespace FearIndigo.Sensors
                 startPositionLocal = new Vector2();
                 endPositionLocal = PolarToCartesian2D(RayLength, angle);
             }
-            
-            var startPositionWorld = RotateWithAgent ?
-                Transform.TransformPoint(startPositionLocal) :
-                Transform.position + startPositionLocal;
-            var endPositionWorld = RotateWithAgent ?
-                Transform.TransformPoint(endPositionLocal) :
-                Transform.position + endPositionLocal;
+
+            var position = (Vector3) AgentRigidbody.position;
+            var startPositionWorld = position + startPositionLocal;
+            var endPositionWorld = position + endPositionLocal;
 
             return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
         }
