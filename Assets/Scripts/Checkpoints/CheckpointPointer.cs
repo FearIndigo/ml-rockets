@@ -41,7 +41,6 @@ namespace FearIndigo.Checkpoints
                 transform.rotation = Quaternion.LookRotation(checkpointDirection, Vector3.back);
                 _color.a = math.clamp(math.remap(fadeDistance.x, fadeDistance.y, 0, maxAlpha, checkpointDirection.magnitude), 0, maxAlpha);
             }
-            
             spriteRenderer.color = _color;
         }
     }
