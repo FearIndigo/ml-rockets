@@ -1,7 +1,6 @@
 using FearIndigo.Checkpoints;
 using FearIndigo.Managers;
 using FearIndigo.Sensors;
-using Unity.Mathematics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;

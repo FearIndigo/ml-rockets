@@ -613,7 +613,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 58304048}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6800856397120928398, guid: a48ab48bc9928ca4298980253f98c76f, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a48ab48bc9928ca4298980253f98c76f, type: 3}
@@ -626,7 +627,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1244495609}
-  - component: {fileID: 1244495608}
+  - component: {fileID: 1244495610}
   m_Layer: 0
   m_Name: TrainingAreaReplicator
   m_TagString: Untagged
@@ -634,22 +635,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1244495608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1244495607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7fc26c3bda6fe4937b2264ffe43190b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseArea: {fileID: 2376483266832581112, guid: a48ab48bc9928ca4298980253f98c76f, type: 3}
-  numAreas: 4
-  separation: 150
-  buildOnly: 1
 --- !u!4 &1244495609
 Transform:
   m_ObjectHideFlags: 0
@@ -665,6 +650,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1244495610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1244495607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74bb1e37cc6e482b836893bdd5400515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseArea: {fileID: 2376483266832581112, guid: a48ab48bc9928ca4298980253f98c76f, type: 3}
+  numAreas: 16
+  separation:
+    x: 150
+    y: 100
+  buildOnly: 1
 --- !u!1 &2100016803
 GameObject:
   m_ObjectHideFlags: 0
