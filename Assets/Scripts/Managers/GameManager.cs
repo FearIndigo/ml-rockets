@@ -1,4 +1,5 @@
 using System;
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace FearIndigo.Managers
@@ -37,6 +38,9 @@ namespace FearIndigo.Managers
         /// </summary>
         public void Reset()
         {
+            if (Academy.Instance.IsCommunicatorOn)
+                trackManager.trackConfigIndex = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("track_config_index", trackManager.trackConfigIndex);
+            
             timerManager.Reset();
             trackManager.GenerateRandomTrack();
             checkpointManager.CreateCheckpoints();

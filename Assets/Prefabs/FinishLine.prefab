@@ -53,7 +53,7 @@ MonoBehaviour:
   checkpointReward: 1
   lineRenderer: {fileID: 4916032474679228217}
   edgeCollider: {fileID: 7889178038469528262}
-  colliderWidth: 0.8
+  colliderWidth: 1.2
   activeColor: {r: 0, g: 1, b: 0.054187775, a: 1}
   nextActiveColor: {r: 0.9254902, g: 0.50242466, b: 0.18823528, a: 1}
   inactiveColor: {r: 0.851, g: 0.30582815, b: 0.27923438, a: 0.5019608}

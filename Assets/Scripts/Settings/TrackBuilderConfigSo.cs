@@ -13,7 +13,7 @@ namespace FearIndigo.Settings
     [Serializable]
     public struct TrackBuilderConfig
     {
-        public uint seed;
+        [HideInInspector] public uint seed;
         public float2 trackBounds;
         public float minTrackWidth;
         public float maxTrackWidth;

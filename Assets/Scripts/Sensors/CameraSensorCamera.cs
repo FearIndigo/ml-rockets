@@ -1,3 +1,4 @@
+using Unity.MLAgents;
 using UnityEngine;
 
 namespace FearIndigo.Sensors
@@ -18,20 +19,32 @@ namespace FearIndigo.Sensors
         private void Awake()
         {
             _camera = GetComponent<Camera>();
-            
-            transform.parent = null;
-            transform.rotation = Quaternion.identity;
-        }
-
-        private void Start()
-        {
             _camera.aspect = sensor.TextureSize.x / (float)sensor.TextureSize.y;
             _camera.orthographicSize = pixelWidth * (sensor.TextureSize.x / 2f);
             _camera.targetTexture = sensor.RenderTexture;
+
+            transform.parent = null;
+            transform.rotation = Quaternion.identity;
+
+            Academy.Instance.AgentPreStep += AgentPreStep;
+        }
+        
+        void OnDestroy()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.AgentPreStep -= AgentPreStep;
+            }
         }
 
-        private void FixedUpdate()
+        private void AgentPreStep(int i)
         {
+            if (!target)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             transform.position = (Vector3)target.position + targetOffset;
 
             RenderCamera();
@@ -41,9 +54,7 @@ namespace FearIndigo.Sensors
         {
             var prevRt = RenderTexture.active;
             RenderTexture.active = _camera.targetTexture;
-            
             _camera.Render();
-
             RenderTexture.active = prevRt;
         }
     }

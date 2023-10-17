@@ -79,10 +79,9 @@ namespace FearIndigo.Ship
             // Active checkpoint +0 direction (2 float)
             sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, 0), maxDistanceObservation));
             // Active checkpoint +1 direction (2 float) [zero value if active checkpoint is finish line]
-            var direction = _gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
+            sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
                 ? Vector2.zero
-                : _gameManager.checkpointManager.GetCheckpointDirection(this, +1);
-            sensor.AddObservation(Normalize(direction, maxDistanceObservation));
+                : Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, +1), maxDistanceObservation));
 
             // 10 total
         }

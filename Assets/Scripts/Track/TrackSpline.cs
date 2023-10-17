@@ -15,6 +15,7 @@ namespace FearIndigo.Track
 
         [Header("Track Mesh")]
         public MeshFilter meshFilter;
+        public MeshFilter trackObservationMeshFilter;
         public CustomCollider2D trackCollider;
         
         [HideInInspector] public Spline centreSpline;
@@ -148,6 +149,7 @@ namespace FearIndigo.Track
             _trackMesh.RecalculateTangents();
             _trackMesh.Optimize();
             meshFilter.sharedMesh = _trackMesh;
+            trackObservationMeshFilter.sharedMesh = _trackMesh;
             
             trackCollider.ClearCustomShapes();
             trackCollider.SetCustomShapes(shapeGroup);

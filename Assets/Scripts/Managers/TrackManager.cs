@@ -9,9 +9,13 @@ namespace FearIndigo.Managers
 {
     public class TrackManager : SubManager
     {
-        public TrackBuilderConfigSo trackConfig;
+        public int trackConfigIndex;
+        public TrackBuilderConfigSo[] trackConfigs;
         public TrackSpline trackSpline;
+        public uint seed;
 
+        public TrackBuilderConfigSo TrackConfig => trackConfigs != null && trackConfigs.Length > 0  ? trackConfigs[trackConfigIndex] : null;
+        
         public float[] GetWidths()
         {
             var widths = trackSpline.widths;
@@ -30,7 +34,7 @@ namespace FearIndigo.Managers
         /// </summary>
         public void RandomizeSeed()
         {
-            trackConfig.data.seed = (uint)Random.Range(0, int.MaxValue);
+            seed = (uint)Random.Range(0, int.MaxValue);
         }
         
         ///<summary>
@@ -51,7 +55,8 @@ namespace FearIndigo.Managers
         /// </summary>
         public void GenerateTrack()
         {
-            TrackBuilder.GenerateTrack(ref trackConfig.data, out var newPoints, out var newWidths);
+            TrackConfig.data.seed = seed;
+            TrackBuilder.GenerateTrack(ref TrackConfig.data, out var newPoints, out var newWidths);
             trackSpline.UpdateTrack(newPoints, newWidths);
         }
 
@@ -67,10 +72,10 @@ namespace FearIndigo.Managers
         /// </summary>
         private void DrawTrackBoundsGizmos()
         {
-            if(!trackConfig) return;
+            if(!TrackConfig) return;
 
             var origin = (Vector2)transform.localPosition;
-            var halfBounds = trackConfig.data.trackBounds / 2f;
+            var halfBounds = TrackConfig.data.trackBounds / 2f;
             var points = new Vector3[]
             {
                 new Vector2(-halfBounds.x, -halfBounds.y) + origin,
