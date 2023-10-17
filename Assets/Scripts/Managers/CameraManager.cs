@@ -1,4 +1,5 @@
 using Cinemachine;
+using UnityEngine;
 
 namespace FearIndigo.Managers
 {
@@ -6,15 +7,17 @@ namespace FearIndigo.Managers
     {
         public CinemachineVirtualCamera virtualCamera;
 
+        public Transform CurrentTarget => virtualCamera?.m_Follow;
+        
         /// <summary>
         /// <para>
         /// Set the camera target.
         /// </para>
         /// </summary>
-        public void UpdateCameraTarget()
+        public void SetCameraTarget(Transform targetTransform)
         {
-            if(!virtualCamera) return;
-            virtualCamera.m_Follow = GameManager.shipManager.ships[0].transform;
+            if(!virtualCamera || !targetTransform) return;
+            virtualCamera.m_Follow = targetTransform;
         }
     }
 }

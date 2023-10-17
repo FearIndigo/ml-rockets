@@ -23,7 +23,10 @@ namespace FearIndigo.Ship
         public ParticleSystem thrustParticles;
 
         [Header("AI")]
-        public float stepPunishment = -0.001f;
+        public float stepPunishment = -0.0005f;
+        public float crashedPunishment = -1f;
+        public float checkpointReward = 1f;
+        public int maxStepsBetweenCheckpoints;
         public float pFactor = 2f;
         public float maxVelocityObservation = 80f;
         public float maxAngularVelocityObservation = 350f;
@@ -32,6 +35,7 @@ namespace FearIndigo.Ship
 
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
+        private int _stepsSinceLastCheckpoint;
 
         [HideInInspector] public Vector2 velocity;
         [HideInInspector] public float angularVelocity;
@@ -47,6 +51,11 @@ namespace FearIndigo.Ship
             rb = GetComponent<Rigidbody2D>();
 
             raySensor.DetectableObject = GetRaySensorDetectableObject;
+        }
+
+        public override void OnEpisodeBegin()
+        {
+            _stepsSinceLastCheckpoint = 0;
         }
 
         private GameObject GetRaySensorDetectableObject()
@@ -76,14 +85,29 @@ namespace FearIndigo.Ship
             sensor.AddObservation(NormalizeRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
             // Active checkpoint -1 direction (2 float)
             sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
-            // Active checkpoint +0 direction (2 float)
-            sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, 0), maxDistanceObservation));
-            // Active checkpoint +1 direction (2 float) [zero value if active checkpoint is finish line]
-            sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, 0) is FinishLine
-                ? Vector2.zero
-                : Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, +1), maxDistanceObservation));
+            // Active checkpoint observation (3 float)
+            ObserveCheckpointAhead(0, sensor);
+            // Active checkpoint +1 observation (3 float)
+            ObserveCheckpointAhead(+1, sensor);
+            // Active checkpoint +2 observation (3 float)
+            ObserveCheckpointAhead(+2, sensor);
 
-            // 10 total
+            // 15 total
+        }
+
+        /// <summary>
+        /// <para>
+        /// Observe if checkpoint is finish line and direction to checkpoint.
+        /// </para>
+        /// </summary>
+        /// <param name="activeCheckpointOffset"></param>
+        /// <param name="sensor"></param>
+        private void ObserveCheckpointAhead(int activeCheckpointOffset, VectorSensor sensor)
+        {
+            sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, activeCheckpointOffset) is FinishLine);
+            sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
+            
+            // 3 Total
         }
 
         private float NormalizeRotation(float input)
@@ -139,11 +163,12 @@ namespace FearIndigo.Ship
         /// </param>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            var deltaTime = Time.fixedDeltaTime;
             var discreteActions = actions.DiscreteActions;
 
             if (discreteActions[0] == 1)
             {
-                velocity += (Vector2)(Quaternion.Euler(0,0,rb.rotation) * Vector3.up * (linearThrust * Time.deltaTime));
+                velocity += (Vector2)(Quaternion.Euler(0,0,rb.rotation) * Vector3.up * (linearThrust * deltaTime));
                 thrustParticles.Play();
             }
             else
@@ -158,16 +183,41 @@ namespace FearIndigo.Ship
                 2 => -1f, // Rotate right
                 _ => 0 // default = No rotation
             };
-            angularVelocity += torque * angularThrust * Time.deltaTime;
+            angularVelocity += torque * angularThrust * deltaTime;
 
-            velocity += Physics2D.gravity * Time.fixedDeltaTime;
-            velocity *= Mathf.Clamp01(1f - drag * Time.fixedDeltaTime);
-            angularVelocity *= Mathf.Clamp01(1f - angularDrag * Time.fixedDeltaTime);
+            velocity += Physics2D.gravity * deltaTime;
+            velocity *= Mathf.Clamp01(1f - drag * deltaTime);
+            angularVelocity *= Mathf.Clamp01(1f - angularDrag * deltaTime);
             
-            rb.MovePosition(rb.position + velocity * Time.fixedDeltaTime);
-            rb.MoveRotation(rb.rotation + angularVelocity * Time.fixedDeltaTime);
+            rb.MovePosition(rb.position + velocity * deltaTime);
+            rb.MoveRotation(rb.rotation + angularVelocity * deltaTime);
             
             AddReward(stepPunishment);
+
+            _stepsSinceLastCheckpoint++;
+            if (_stepsSinceLastCheckpoint > maxStepsBetweenCheckpoints)
+            {
+                EpisodeInterrupted();
+                _gameManager.Reset();
+            }
+        }
+
+        /// <summary>
+        /// Set reward and reset _stepsSinceLastCheckpoint.
+        /// </summary>
+        public void CheckpointAcquired()
+        {
+            SetReward(checkpointReward);
+            _stepsSinceLastCheckpoint = 0;
+        }
+
+        /// <summary>
+        /// Set punishment and stop ship.
+        /// </summary>
+        public void Crashed()
+        {
+            SetReward(crashedPunishment);
+            _gameManager.shipManager.StopShip(this);
         }
 
         /// <summary>

@@ -1,5 +1,4 @@
 ﻿using FearIndigo.Ship;
-using UnityEngine;
 
 namespace FearIndigo.Checkpoints
 {
@@ -10,10 +9,6 @@ namespace FearIndigo.Checkpoints
             base.OnCheckpointAcquired(ship);
             
             GameManager.shipManager.StopShip(ship);
-            
-            Debug.Log("Crossed the finish line!");
-            
-            ship.EndEpisode();
         }
     }
 }

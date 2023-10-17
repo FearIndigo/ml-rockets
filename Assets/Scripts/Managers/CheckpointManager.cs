@@ -52,12 +52,12 @@ namespace FearIndigo.Managers
                 var posIndex = i + 1;
                 var position = positions[posIndex];
                 var t = posIndex / (float) positions.Length;
-                checkpoint.Init(i, position, widths[posIndex], trackManager.trackSpline.centreSpline.GetTangent(t));
+                checkpoint.Init(i, position);
                 checkpoint.UpdateLine(trackManager.trackSpline.leftSpline.points[posIndex] - position, trackManager.trackSpline.rightSpline.points[posIndex] - position);
                 checkpoints.Add(checkpoint);
             }
             var finishLine = Instantiate(finishLinePrefab, transform);
-            finishLine.Init(positions.Length - 1, positions[0], widths[0], trackManager.trackSpline.centreSpline.GetTangent(0));
+            finishLine.Init(positions.Length - 1, positions[0]);
             finishLine.UpdateLine(trackManager.trackSpline.leftSpline.points[0] - positions[0], trackManager.trackSpline.rightSpline.points[0] - positions[0]);
             checkpoints.Add(finishLine);
         }
@@ -72,7 +72,7 @@ namespace FearIndigo.Managers
         /// <param name="checkpointId"></param>
         public void SetActiveCheckpoint(ShipController ship, int checkpointId)
         {
-            var mainShip = ship == GameManager.shipManager.ships[0];
+            var mainShip = ship == GameManager.shipManager.MainShip;
             
             var activeCheckpointId = GetActiveCheckpointId(ship);
             if(mainShip) checkpoints[activeCheckpointId].SetState(CheckpointBase.State.Inactive);

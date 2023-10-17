@@ -45,7 +45,7 @@ namespace FearIndigo.Managers
             trackManager.GenerateRandomTrack();
             checkpointManager.CreateCheckpoints();
             shipManager.SpawnShips();
-            cameraManager.UpdateCameraTarget();
+            cameraManager.SetCameraTarget(shipManager.MainShip?.transform);
         }
     }
 }

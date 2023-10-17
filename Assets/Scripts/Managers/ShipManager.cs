@@ -13,6 +13,8 @@ namespace FearIndigo.Managers
         
         [HideInInspector] public List<ShipController> ships = new List<ShipController>();
 
+        public ShipController MainShip => ships?.Count > 0 ? ships[0] : null;
+        
         private int shipsStopped;
 
         /// <summary>
@@ -29,6 +31,7 @@ namespace FearIndigo.Managers
                 if (i < ships.Count)
                 {
                     ship = ships[i];
+                    ship.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -60,7 +63,6 @@ namespace FearIndigo.Managers
             {
                 foreach (var oldShip in ships)
                 {
-                    oldShip.gameObject.SetActive(true);
                     oldShip.EndEpisode();
                 }
                 
@@ -69,6 +71,16 @@ namespace FearIndigo.Managers
             else
             {
                 ship.gameObject.SetActive(false);
+
+                if (GameManager.cameraManager.CurrentTarget == ship.transform)
+                {
+                    foreach (var otherShip in ships)
+                    {
+                        if (!otherShip.gameObject.activeSelf) continue;
+                        GameManager.cameraManager.SetCameraTarget(otherShip.transform);
+                        break;
+                    }
+                }
             }
         }
     }
