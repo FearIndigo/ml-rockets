@@ -9,12 +9,13 @@ namespace FearIndigo.Managers
 {
     public class TrackManager : SubManager
     {
+        public bool randomConfig;
         public int trackConfigIndex;
         public TrackBuilderConfigSo[] trackConfigs;
         public TrackSpline trackSpline;
         public uint seed;
 
-        public TrackBuilderConfigSo TrackConfig => trackConfigs != null && trackConfigs.Length > 0  ? trackConfigs[trackConfigIndex] : null;
+        public TrackBuilderConfigSo TrackConfig => trackConfigs?.Length > 0  ? trackConfigs[trackConfigIndex % trackConfigs.Length] : null;
         
         public float[] GetWidths()
         {
@@ -55,6 +56,10 @@ namespace FearIndigo.Managers
         /// </summary>
         public void GenerateTrack()
         {
+            if (randomConfig)
+            {
+                trackConfigIndex = Random.Range(0, trackConfigs.Length);
+            }
             TrackConfig.data.seed = seed;
             TrackBuilder.GenerateTrack(ref TrackConfig.data, out var newPoints, out var newWidths);
             trackSpline.UpdateTrack(newPoints, newWidths);

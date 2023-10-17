@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FearIndigo.Utility;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
@@ -324,25 +325,8 @@ namespace FearIndigo.Sensors
         {
             if (!ReferenceEquals(null, m_PerceptionTexture))
             {
-                DestroyTexture(m_PerceptionTexture);
+                TextureHelper.DestroyTexture(m_PerceptionTexture);
                 m_PerceptionTexture = null;
-            }
-        }
-        
-        /// <summary>
-        /// Safely destroy a texture. This has to be used differently in unit tests.
-        /// </summary>
-        /// <param name="texture"></param>
-        public static void DestroyTexture(Texture2D texture)
-        {
-            if (Application.isEditor)
-            {
-                // Edit Mode tests complain if we use Destroy()
-                UnityEngine.Object.DestroyImmediate(texture);
-            }
-            else
-            {
-                UnityEngine.Object.Destroy(texture);
             }
         }
     }

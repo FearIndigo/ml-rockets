@@ -5586,7 +5586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 25000
+  NumStepsToRecord: 30000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673

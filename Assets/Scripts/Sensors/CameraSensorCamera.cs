@@ -1,4 +1,3 @@
-using Unity.MLAgents;
 using UnityEngine;
 
 namespace FearIndigo.Sensors
@@ -25,19 +24,19 @@ namespace FearIndigo.Sensors
 
             transform.parent = null;
             transform.rotation = Quaternion.identity;
-
-            Academy.Instance.AgentPreStep += AgentPreStep;
+            
+            sensor.OnUpdate += OnSensorUpdate;
         }
         
         void OnDestroy()
         {
-            if (Academy.IsInitialized)
+            if (sensor)
             {
-                Academy.Instance.AgentPreStep -= AgentPreStep;
+                sensor.OnUpdate -= OnSensorUpdate;
             }
         }
 
-        private void AgentPreStep(int i)
+        private void OnSensorUpdate()
         {
             if (!target)
             {

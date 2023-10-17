@@ -10,7 +10,7 @@ namespace FearIndigo.Sensors
     /// </summary>
     public class CustomRenderTextureSensorComponent : SensorComponent, IDisposable
     {
-        RenderTextureSensor m_Sensor;
+        CustomRenderTextureSensor m_Sensor;
 
         /// <summary>
         /// The [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance
@@ -39,6 +39,8 @@ namespace FearIndigo.Sensors
             }
             set { m_RenderTexture = value; }
         }
+
+        public event Action OnUpdate;
         
         /// <summary>
         /// Dimensions of the render texture
@@ -53,7 +55,7 @@ namespace FearIndigo.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
-        string m_SensorName = "RenderTextureSensor";
+        string m_SensorName = "CustomRenderTextureSensor";
 
         /// <summary>
         /// Name of the generated <see cref="RenderTextureSensor"/>.
@@ -109,7 +111,8 @@ namespace FearIndigo.Sensors
         public override ISensor[] CreateSensors()
         {
             Dispose();
-            m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
+            m_Sensor = new CustomRenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
+            m_Sensor.OnUpdate += () => { OnUpdate?.Invoke(); };
             if (ObservationStacks != 1)
             {
                 return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
