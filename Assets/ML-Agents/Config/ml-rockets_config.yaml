@@ -57,7 +57,7 @@ environment_parameters:
       - name: DefaultTrack
         value: 2.0
 env_settings:
-  env_path: Builds/Windows/ml-rockets
+  env_path: "Builds/Windows/Rocket Man"
   num_envs: 1
   num_areas: 16
 engine_settings:
