@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45fd0d4b56c4cd24d8f66580ad15807a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outOfBoundsPunishment: -1
 --- !u!33 &5564721900747486554
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -1720,6 +1719,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee6e4a0973bafe48a0e49f41f938a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  randomSeedOnReset: 1
   timerManager: {fileID: 6288985719069078033}
   shipManager: {fileID: 4380384534135569019}
   cameraManager: {fileID: 5136156369713821281}
@@ -1737,7 +1737,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83bdd263b34140aab9301f33dda07c2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerPaused: 0
   timer: 0
 --- !u!114 &4380384534135569019
 MonoBehaviour:
@@ -1751,6 +1750,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 652a8a6277494c2eb615806abd535eff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  resetOnAllShipsStopped: 1
   shipPrefab: {fileID: 5631927508277157399, guid: 0db012acccb8ade4eb8b169dda18af90, type: 3}
   firstShipUseHeuristics: 0
   numShips: 1

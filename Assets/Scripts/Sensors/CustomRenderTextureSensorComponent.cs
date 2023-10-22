@@ -41,6 +41,7 @@ namespace FearIndigo.Sensors
         }
 
         public event Action OnUpdate;
+        public event Action OnDestroyed;
         
         /// <summary>
         /// Dimensions of the render texture
@@ -141,6 +142,11 @@ namespace FearIndigo.Sensors
                 m_Sensor.Dispose();
                 m_Sensor = null;
             }
+        }
+
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace FearIndigo.Managers
     [RequireComponent(typeof(CheckpointManager))]
     public class GameManager : MonoBehaviour
     {
+        public bool randomSeedOnReset;
         [HideInInspector] public TimerManager timerManager;
         [HideInInspector] public ShipManager shipManager;
         [HideInInspector] public CameraManager cameraManager;
@@ -42,7 +43,8 @@ namespace FearIndigo.Managers
                 trackManager.trackConfigIndex = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("track_config_index", trackManager.trackConfigIndex);
             
             timerManager.Reset();
-            trackManager.GenerateRandomTrack();
+            if(randomSeedOnReset) trackManager.RandomizeSeed();
+            trackManager.GenerateTrack();
             checkpointManager.CreateCheckpoints();
             shipManager.SpawnShips();
             cameraManager.SetCameraTarget(shipManager.MainShip?.transform);

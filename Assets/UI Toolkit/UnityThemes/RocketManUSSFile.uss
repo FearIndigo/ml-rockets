@@ -1,0 +1,92 @@
+*{
+    -unity-font-definition: url("/Assets/Fonts/Resources/PressStart2P-Regular SDF.asset");
+}
+
+.main-menu{
+    margin: auto;
+}
+
+.title-text{
+    color: white;
+    font-size: 64px;
+    height: 100px;
+    -unity-text-align: middle-center;
+}
+
+.timer-text{
+    position: absolute;
+    width: 100%;
+    top: 5px;
+    color: white;
+    -unity-text-align: middle-center;
+}
+
+.random-seed{
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: white;
+    -unity-text-align: middle-left;
+    width: 500px;
+}
+
+.text-field TextInput{
+    background-color: #191919;
+    color: white;
+    -unity-text-align: middle-left;
+}
+
+.checkpoint-splits{
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: white;
+}
+
+.splits-key{
+    width: 50px;
+    -unity-text-align: middle-right;
+    margin-right: 5px;
+}
+
+.splits-value{
+    width: 150px;
+    -unity-text-align: middle-left;
+}
+
+.button{
+    background-color: #191919;
+    color: white;
+    height: 80px;
+    -unity-text-align: middle-center;
+}
+
+.margin-right{
+    margin-right: 10px;
+}
+
+.margin-bottom-small{
+    margin-bottom: 5px;
+}
+
+.scale-up{
+    scale: 1.2 1.2;
+}
+
+.flex-row{
+    flex-direction: row;
+}
+
+.flex-column{
+    flex-direction: column;
+}
+
+.press-start{
+    margin-top: 10px;
+    font-size: 28px;
+    color: white;
+    height: 80px;
+    -unity-text-align: middle-center;
+    transition-duration: 1s;
+    transition-timing-function: linear
+}

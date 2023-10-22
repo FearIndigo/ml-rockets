@@ -8,7 +8,7 @@ namespace FearIndigo.Checkpoints
         {
             base.OnCheckpointAcquired(ship);
             
-            GameManager.shipManager.StopShip(ship);
+            ship.StopShip();
         }
     }
 }

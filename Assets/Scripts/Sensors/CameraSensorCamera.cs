@@ -26,13 +26,20 @@ namespace FearIndigo.Sensors
             transform.rotation = Quaternion.identity;
             
             sensor.OnUpdate += OnSensorUpdate;
+            sensor.OnDestroyed += OnSensorDestroyed;
         }
-        
+
+        private void OnSensorDestroyed()
+        {
+            Destroy(gameObject);
+        }
+
         void OnDestroy()
         {
             if (sensor)
             {
                 sensor.OnUpdate -= OnSensorUpdate;
+                sensor.OnDestroyed -= OnSensorDestroyed;
             }
         }
 

@@ -22,16 +22,11 @@ namespace FearIndigo.Checkpoints
             _ship = GetComponentInParent<ShipController>();
             _gameManager = GetComponentInParent<GameManager>();
             _color = spriteRenderer.color;
-
-            if (_gameManager.shipManager.ships[0] != _ship)
-            {
-                Destroy(gameObject);
-            }
         }
 
         private void LateUpdate()
         {
-            if (hideIfActiveIsFinishLine && _gameManager.checkpointManager.GetCheckpoint(_ship, 0) is FinishLine)
+            if (_ship != _gameManager.shipManager.MainShip || hideIfActiveIsFinishLine && _gameManager.checkpointManager.GetCheckpoint(_ship, 0) is FinishLine)
             {
                 _color.a = 0f;
             }

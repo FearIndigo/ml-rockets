@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using FearIndigo.Ship;
+using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using UnityEngine;
 
@@ -7,15 +8,17 @@ namespace FearIndigo.Managers
 {
     public class ShipManager : SubManager
     {
+        public bool resetOnAllShipsStopped;
         public ShipController shipPrefab;
         public bool firstShipUseHeuristics;
         public int numShips = 1;
         
         [HideInInspector] public List<ShipController> ships = new List<ShipController>();
 
-        public ShipController MainShip => ships?.Count > 0 ? ships[0] : null;
-        
-        private int shipsStopped;
+        public ShipController MainShip => _mainShipIndex < ships?.Count ? ships[_mainShipIndex] : null;
+
+        private int _mainShipIndex = 0;
+        private int _shipsStopped;
 
         /// <summary>
         /// <para>
@@ -24,6 +27,15 @@ namespace FearIndigo.Managers
         /// </summary>
         public void SpawnShips()
         {
+            if (ships.Count > numShips)
+            {
+                for (var i = numShips; i < ships.Count; i++)
+                {
+                    Destroy(ships[i].gameObject);
+                }
+                ships.RemoveRange(numShips, ships.Count - numShips);
+            }
+            
             var position = GameManager.trackManager.trackSpline.centreSpline.points[0];
             for (var i = 0; i < numShips; i++)
             {
@@ -31,57 +43,72 @@ namespace FearIndigo.Managers
                 if (i < ships.Count)
                 {
                     ship = ships[i];
-                    ship.gameObject.SetActive(true);
                 }
                 else
                 {
                     ship = Instantiate(shipPrefab, transform);
                     ships.Add(ship);
                 }
-                
+
+                ship.Init(i, firstShipUseHeuristics && i == 0);
                 ship.Teleport(position);
-                ship.SetBehaviourType((firstShipUseHeuristics && i == 0) ?
-                    BehaviorType.HeuristicOnly :
-                    BehaviorType.Default);
                 GameManager.checkpointManager.SetActiveCheckpoint(ship, 0);
             }
 
-            shipsStopped = 0;
+            SetMainShipIndex(0);
+            _shipsStopped = 0;
         }
 
         /// <summary>
         /// <para>
-        /// Stop the ship. Reset when all ships have been stopped.
+        /// Notify that a ship has been stopped. Update main ship or reset when all ships have been stopped.
         /// </para>
         /// </summary>
         /// <param name="ship"></param>
-        public void StopShip(ShipController ship)
+        public void ShipStopped(ShipController ship)
         {
-            shipsStopped++;
+            _shipsStopped++;
             
-            if (shipsStopped == ships.Count)
+            if (_shipsStopped == ships.Count)
             {
-                foreach (var oldShip in ships)
+                if (resetOnAllShipsStopped)
                 {
-                    oldShip.EndEpisode();
+                    GameManager.Reset();
                 }
-                
-                GameManager.Reset();
+                else
+                {
+                    FindObjectOfType<MainSceneManager>()?.RoundOver();
+                }
             }
             else
             {
-                ship.gameObject.SetActive(false);
-
-                if (GameManager.cameraManager.CurrentTarget == ship.transform)
+                ship.enabled = false;
+                if (ship.index == _mainShipIndex)
                 {
-                    foreach (var otherShip in ships)
+                    for (var i = 0; i < ships.Count; i++)
                     {
-                        if (!otherShip.gameObject.activeSelf) continue;
-                        GameManager.cameraManager.SetCameraTarget(otherShip.transform);
+                        var otherShip = ships[i];
+                        if (!otherShip.enabled) continue;
+
+                        SetMainShipIndex(i);
                         break;
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Set the current main ship index.
+        /// Sets camera target and updates the checkpoint visuals.
+        /// </summary>
+        /// <param name="i"></param>
+        public void SetMainShipIndex(int i)
+        {
+            if(i >= ships.Count || i < 0) return;
+            
+            _mainShipIndex = i;
+            GameManager.cameraManager.SetCameraTarget(MainShip.transform);
+            GameManager.checkpointManager.SetActiveCheckpoint(MainShip, GameManager.checkpointManager.GetActiveCheckpointId(MainShip));
         }
     }
 }

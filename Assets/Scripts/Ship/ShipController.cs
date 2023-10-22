@@ -1,3 +1,4 @@
+using FearIndigo.Audio;
 using FearIndigo.Checkpoints;
 using FearIndigo.Managers;
 using FearIndigo.Sensors;
@@ -12,6 +13,8 @@ namespace FearIndigo.Ship
     [RequireComponent(typeof(Rigidbody2D))]
     public class ShipController : Agent
     {
+        [HideInInspector] public int index;
+        
         [Header("Physics")]
         public float linearThrust;
         public float angularThrust;
@@ -19,9 +22,18 @@ namespace FearIndigo.Ship
         public float angularDrag;
 
         [Header("Graphics")]
+        public SpriteRenderer spriteRenderer;
         public TrailRenderer trail;
         public ParticleSystem thrustParticles;
 
+        [Header("Colors")]
+        public Color aiColor;
+        public Color humanColor;
+        
+        [Header("Audio")]
+        public AudioEvent crashedAudioEvent;
+        public AudioEvent thrustAudio;
+        
         [Header("AI")]
         public float stepPunishment = -0.0005f;
         public float crashedPunishment = -1f;
@@ -36,11 +48,12 @@ namespace FearIndigo.Ship
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
         private int _stepsSinceLastCheckpoint;
+        private AudioSource _thrustSource;
 
         [HideInInspector] public Vector2 velocity;
         [HideInInspector] public float angularVelocity;
         [HideInInspector] public Rigidbody2D rb;
-
+        
         protected override void Awake()
         {
             base.Awake();
@@ -53,6 +66,20 @@ namespace FearIndigo.Ship
             raySensor.DetectableObject = GetRaySensorDetectableObject;
         }
 
+        public void Init(int shipIndex, bool useHeuristics)
+        {
+            index = shipIndex;
+            enabled = true;
+            
+            _behaviorParameters.BehaviorType = useHeuristics ? BehaviorType.HeuristicOnly : BehaviorType.Default;
+
+            spriteRenderer.color = useHeuristics switch
+            {
+                true => humanColor,
+                false => aiColor
+            };
+        }
+        
         public override void OnEpisodeBegin()
         {
             _stepsSinceLastCheckpoint = 0;
@@ -61,11 +88,6 @@ namespace FearIndigo.Ship
         private GameObject GetRaySensorDetectableObject()
         {
             return _gameManager.checkpointManager.GetCheckpoint(this, 0).gameObject;
-        }
-        
-        public void SetBehaviourType(BehaviorType behaviorType)
-        {
-            _behaviorParameters.BehaviorType = behaviorType;
         }
         
         /// <summary>
@@ -166,15 +188,12 @@ namespace FearIndigo.Ship
             var deltaTime = Time.fixedDeltaTime;
             var discreteActions = actions.DiscreteActions;
 
-            if (discreteActions[0] == 1)
+            var thrust = discreteActions[0] == 1;
+            if (thrust)
             {
                 velocity += (Vector2)(Quaternion.Euler(0,0,rb.rotation) * Vector3.up * (linearThrust * deltaTime));
-                thrustParticles.Play();
             }
-            else
-            {
-                thrustParticles.Stop();
-            }
+            PlayThrust(thrust);
 
             var torque = discreteActions[1] switch
             {
@@ -195,10 +214,35 @@ namespace FearIndigo.Ship
             AddReward(stepPunishment);
 
             _stepsSinceLastCheckpoint++;
-            if (_stepsSinceLastCheckpoint > maxStepsBetweenCheckpoints)
+            if (Academy.Instance.IsCommunicatorOn && _stepsSinceLastCheckpoint > maxStepsBetweenCheckpoints)
             {
                 EpisodeInterrupted();
                 _gameManager.Reset();
+            }
+        }
+
+        public void PlayThrust(bool play)
+        {
+            if (play)
+            {
+                thrustParticles.Play();
+                if(!_thrustSource)
+                    _thrustSource = AudioSourcePool.Get();
+                if (!_thrustSource.isPlaying)
+                    thrustAudio.Play(_thrustSource, transform.position);
+                else
+                    _thrustSource.transform.position = transform.position;
+            }
+            else
+            {
+                thrustParticles.Stop();
+
+                if (_thrustSource)
+                {
+                    _thrustSource.Stop();
+                    AudioSourcePool.Release(_thrustSource);
+                    _thrustSource = null;
+                }
             }
         }
 
@@ -216,8 +260,20 @@ namespace FearIndigo.Ship
         /// </summary>
         public void Crashed()
         {
+            crashedAudioEvent.Play(transform.position);
             SetReward(crashedPunishment);
-            _gameManager.shipManager.StopShip(this);
+            StopShip();
+        }
+
+        /// <summary>
+        /// Stop the ship moving etc.
+        /// </summary>
+        public void StopShip()
+        {
+            EndEpisode();
+            PlayThrust(false);
+
+            _gameManager.shipManager.ShipStopped(this);
         }
 
         /// <summary>
@@ -236,6 +292,7 @@ namespace FearIndigo.Ship
             velocity = Vector2.zero;
             angularVelocity = 0f;
             trail.Clear();
+            thrustParticles.Clear();
         }
     }
 }

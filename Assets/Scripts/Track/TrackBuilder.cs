@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using FearIndigo.Settings;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;

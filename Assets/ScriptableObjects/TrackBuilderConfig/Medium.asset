@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fc57f5db8ac444d9678ef23006bd8b1, type: 3}
+  m_Name: Medium
+  m_EditorClassIdentifier: 
+  data:
+    seed: 1585117715
+    trackBounds:
+      x: 114
+      y: 64
+    minTrackWidth: 8
+    maxTrackWidth: 13
+    numRandomPoints: 16
+    minRandomPointDistance: 5
+    maxXDisplacement: 8
+    maxYDisplacement: 13
+    minPointDistance: 10
+    minCornerAngle: 35
+    maxIterations: 1000
+    maxRandomPointIterations: 1000
+    maxConvexHullIterations: 1000
+    maxDisplacementIterations: 1000

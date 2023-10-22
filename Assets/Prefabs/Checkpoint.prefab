@@ -48,9 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   checkpointId: 0
   state: 0
-  width: 0
-  rotation: 0
-  checkpointReward: 1
+  acquiredAudioEvent: {fileID: 11400000, guid: 8f480ec914a672942955863ec9f23012, type: 2}
   lineRenderer: {fileID: 6781208390177109422}
   edgeCollider: {fileID: 6375739939332349406}
   colliderWidth: 1.2

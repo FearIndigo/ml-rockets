@@ -1,4 +1,5 @@
 ﻿using System;
+using FearIndigo.Audio;
 using FearIndigo.Managers;
 using FearIndigo.Ship;
 using Unity.Mathematics;
@@ -18,6 +19,7 @@ namespace FearIndigo.Checkpoints
         
         public int checkpointId;
         public State state;
+        public AudioEvent acquiredAudioEvent;
 
         protected GameManager GameManager;
 
@@ -78,8 +80,10 @@ namespace FearIndigo.Checkpoints
         protected virtual void OnCheckpointAcquired(ShipController ship)
         {
             GameManager.checkpointManager.SetActiveCheckpoint(ship, checkpointId + 1);
-            GameManager.checkpointManager.UpdateCheckpointSplit(ship, checkpointId);
+            GameManager.timerManager.UpdateCheckpointSplit(ship, checkpointId);
             ship.CheckpointAcquired();
+
+            acquiredAudioEvent.Play(ship.transform.position);
         }
     }
 }

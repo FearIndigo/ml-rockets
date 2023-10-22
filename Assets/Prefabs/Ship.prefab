@@ -364,7 +364,7 @@ MonoBehaviour:
   target: {fileID: 6718346088288863038}
   targetOffset: {x: 0, y: 0, z: -5}
   sensor: {fileID: 4442577925806857405}
-  pixelWidth: 1.5
+  pixelWidth: 0.6
 --- !u!1 &4739967667532397703
 GameObject:
   m_ObjectHideFlags: 0
@@ -5291,7 +5291,7 @@ MonoBehaviour:
   m_RaycastHitBufferSize: 5
   m_RaysPerDirection: 4
   m_MaxRayDegrees: 160
-  m_SphereCastRadius: 1.5
+  m_SphereCastRadius: 0
   m_RayLength: 15
   m_RayLayerMask:
     serializedVersion: 2
@@ -5558,12 +5558,18 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  index: 0
   linearThrust: 40
   angularThrust: 1200
   drag: 0.5
   angularDrag: 3
+  spriteRenderer: {fileID: 5234325226019917792}
   trail: {fileID: 1153344453147124743}
   thrustParticles: {fileID: 3688294887216310201}
+  aiColor: {r: 0.14509805, g: 0.98039216, b: 0.8721149, a: 1}
+  humanColor: {r: 1, g: 1, b: 1, a: 1}
+  crashedAudioEvent: {fileID: 11400000, guid: 4e7ef3fbe950c894cbe4bea76063b5f1, type: 2}
+  thrustAudio: {fileID: 11400000, guid: 1ef6571c373256c4f9284be3a740b4c5, type: 2}
   stepPunishment: -0.0005
   crashedPunishment: -1
   checkpointReward: 1

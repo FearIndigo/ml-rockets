@@ -10,7 +10,6 @@ namespace FearIndigo.Managers
         public Checkpoint checkpointPrefab;
         public FinishLine finishLinePrefab;
         
-        [HideInInspector] public Dictionary<ShipController, Dictionary<int, float>> shipCheckpointSplits = new Dictionary<ShipController, Dictionary<int, float>>();
         [HideInInspector] public Dictionary<ShipController, int> shipActiveCheckpointIds = new Dictionary<ShipController, int>();
         [HideInInspector] public List<CheckpointBase> checkpoints = new List<CheckpointBase>();
 
@@ -39,7 +38,6 @@ namespace FearIndigo.Managers
                 Destroy(checkpoint.gameObject);
             }
             
-            shipCheckpointSplits.Clear();
             shipActiveCheckpointIds.Clear();
             checkpoints.Clear();
 
@@ -83,23 +81,6 @@ namespace FearIndigo.Managers
 
             if (checkpointId >= checkpoints.Count - 1) return;
             if(mainShip) checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
-        }
-
-        /// <summary>
-        /// <para>
-        /// Set the timer split for the checkpointId.
-        /// </para>
-        /// </summary>
-        /// <param name="ship"></param>
-        /// <param name="checkpointId"></param>
-        public void UpdateCheckpointSplit(ShipController ship, int checkpointId)
-        {
-            if (!shipCheckpointSplits.TryGetValue(ship, out var checkpointSplits))
-            {
-                checkpointSplits = new Dictionary<int, float>();
-                shipCheckpointSplits.Add(ship, checkpointSplits);
-            }
-            checkpointSplits.Add(checkpointId, GameManager.timerManager.timer);
         }
 
         private void OnDrawGizmos()

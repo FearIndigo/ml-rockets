@@ -1,5 +1,4 @@
 using System;
-using FearIndigo.Settings;
 using FearIndigo.Track;
 using Unity.Mathematics;
 using UnityEngine;

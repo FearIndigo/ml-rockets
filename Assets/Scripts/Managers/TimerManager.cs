@@ -1,16 +1,22 @@
+using System;
+using System.Collections.Generic;
+using FearIndigo.Ship;
 using UnityEngine;
 
 namespace FearIndigo.Managers
 {
     public class TimerManager : SubManager
     {
-        public bool timerPaused;
         public float timer;
-
+        
+        [HideInInspector] public Dictionary<ShipController, Dictionary<int, float>> shipCheckpointSplits = new Dictionary<ShipController, Dictionary<int, float>>();
+        [HideInInspector] public Action OnCheckpointSplitsUpdated;
+        
         public void Reset()
         {
-            timerPaused = false;
+            shipCheckpointSplits.Clear();
             timer = 0;
+            OnCheckpointSplitsUpdated?.Invoke();
         }
         
         public void FixedUpdate()
@@ -20,13 +26,31 @@ namespace FearIndigo.Managers
 
         ///<summary>
         /// <para>
-        /// Increase time on timer if not paused.
+        /// Increase time on timer.
         /// </para>
         /// </summary>
         private void UpdateTimer()
         {
-            if(timerPaused) return;
             timer += Time.deltaTime;
+        }
+        
+        /// <summary>
+        /// <para>
+        /// Set the timer split for the checkpointId.
+        /// </para>
+        /// </summary>
+        /// <param name="ship"></param>
+        /// <param name="checkpointId"></param>
+        public void UpdateCheckpointSplit(ShipController ship, int checkpointId)
+        {
+            if (!shipCheckpointSplits.TryGetValue(ship, out var checkpointSplits))
+            {
+                checkpointSplits = new Dictionary<int, float>();
+                shipCheckpointSplits.Add(ship, checkpointSplits);
+            }
+            checkpointSplits.Add(checkpointId, GameManager.timerManager.timer);
+            
+            OnCheckpointSplitsUpdated?.Invoke();
         }
     }
 }
