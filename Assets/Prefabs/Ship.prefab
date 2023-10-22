@@ -364,7 +364,7 @@ MonoBehaviour:
   target: {fileID: 6718346088288863038}
   targetOffset: {x: 0, y: 0, z: -5}
   sensor: {fileID: 4442577925806857405}
-  pixelWidth: 0.6
+  pixelWidth: 0.32
 --- !u!1 &4739967667532397703
 GameObject:
   m_ObjectHideFlags: 0
@@ -409,7 +409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c02510c7f5940809b1bbf3de0c9615d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TextureSize: {x: 30, y: 30}
+  m_TextureSize: {x: 64, y: 64}
   m_SensorName: RenderTextureSensor
   m_Grayscale: 1
   m_ObservationStacks: 1
@@ -5289,10 +5289,10 @@ MonoBehaviour:
   m_SensorName: CustomRayPerceptionSensor
   m_AgentRigidbody: {fileID: 6718346088288863038}
   m_RaycastHitBufferSize: 5
-  m_RaysPerDirection: 4
-  m_MaxRayDegrees: 160
+  m_RaysPerDirection: 6
+  m_MaxRayDegrees: 166.15
   m_SphereCastRadius: 0
-  m_RayLength: 15
+  m_RayLength: 20
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -5595,7 +5595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 30000
+  NumStepsToRecord: 20000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673
