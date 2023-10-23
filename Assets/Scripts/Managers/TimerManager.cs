@@ -17,7 +17,12 @@ namespace FearIndigo.Managers
             shipCheckpointSplits.Clear();
             foreach (var ship in GameManager.shipManager.ships)
             {
-                shipCheckpointSplits.Add(ship, new Dictionary<int, float>());
+                var dictionary = new Dictionary<int, float>();
+                foreach (var checkpoint in GameManager.checkpointManager.checkpoints)
+                {
+                    dictionary.Add(checkpoint.checkpointId, 0f);
+                }
+                shipCheckpointSplits.Add(ship, dictionary);
             }
             timer = 0;
             OnCheckpointSplitsUpdated?.Invoke();
@@ -52,7 +57,7 @@ namespace FearIndigo.Managers
                 checkpointSplits = new Dictionary<int, float>();
                 shipCheckpointSplits.Add(ship, checkpointSplits);
             }
-            checkpointSplits.Add(checkpointId, GameManager.timerManager.timer);
+            checkpointSplits[checkpointId] = GameManager.timerManager.timer;
             
             OnCheckpointSplitsUpdated?.Invoke();
         }

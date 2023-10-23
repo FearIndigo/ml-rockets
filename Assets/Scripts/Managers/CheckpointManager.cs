@@ -71,18 +71,21 @@ namespace FearIndigo.Managers
         public void SetActiveCheckpoint(ShipController ship, int checkpointId)
         {
             var mainShip = ship == GameManager.shipManager.MainShip;
-            
-            var activeCheckpointId = GetActiveCheckpointId(ship);
-            if(mainShip) checkpoints[activeCheckpointId].SetState(CheckpointBase.State.Inactive);
-            
+            if (mainShip)
+            {
+                foreach (var checkpoint in checkpoints)
+                {
+                    checkpoint.SetState(CheckpointBase.State.Inactive);
+                }
+            }
             if (checkpointId >= checkpoints.Count) return;
-            if(mainShip) checkpoints[checkpointId].SetState(CheckpointBase.State.Active);
             shipActiveCheckpointIds[ship] = checkpointId;
-
+            if (!mainShip) return;
+            checkpoints[checkpointId].SetState(CheckpointBase.State.Active);
             if (checkpointId >= checkpoints.Count - 1) return;
-            if(mainShip) checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
+            checkpoints[checkpointId + 1].SetState(CheckpointBase.State.NextActive);
         }
-
+        
         private void OnDrawGizmos()
         {
             DrawCheckpointGizmos();

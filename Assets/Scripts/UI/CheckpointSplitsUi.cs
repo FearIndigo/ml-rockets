@@ -17,6 +17,8 @@ namespace FearIndigo.UI
             mainSceneManager.uiDocument.rootVisualElement.Add(container);
             
             gameManager.timerManager.OnCheckpointSplitsUpdated += UpdateCheckpointSplits;
+
+            UpdateCheckpointSplits();
         }
 
         private void OnDisable()
@@ -40,7 +42,7 @@ namespace FearIndigo.UI
                     splitsContainer.Add(
                         UIHelper.Create("flex-row", "margin-bottom-small").Add(
                                 UIHelper.Create<TextElement>($"{checkpointSplit.Key + 1}:", "splits-key"),
-                                UIHelper.Create<TextElement>($"{checkpointSplit.Value:F2}", "splits-value")));
+                                UIHelper.Create<TextElement>(checkpointSplit.Value == 0f ? "" : $"{checkpointSplit.Value:F2}", "splits-value")));
                 }
                 
                 container.Add(splitsContainer);

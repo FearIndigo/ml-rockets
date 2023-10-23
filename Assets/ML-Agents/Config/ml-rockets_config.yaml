@@ -35,27 +35,27 @@ behaviors:
     max_steps: 15000000
     time_horizon: 256
     summary_freq: 30000
-environment_parameters:
-  track_config_index:
-    curriculum:
-      - name: EasyTrack
-        value: 0.0
-        completion_criteria:
-          measure: reward
-          behavior: ShipBehavior
-          min_lesson_length: 100
-          threshold: 3.0
-          require_reset: true
-      - name: MediumTrack
-        value: 1.0
-        completion_criteria:
-          measure: reward
-          behavior: ShipBehavior
-          min_lesson_length: 100
-          threshold: 5.0
-          require_reset: true
-      - name: DefaultTrack
-        value: 2.0
+#environment_parameters:
+#  track_config_index:
+#    curriculum:
+#      - name: EasyTrack
+#        value: 0.0
+#        completion_criteria:
+#          measure: reward
+#          behavior: ShipBehavior
+#          min_lesson_length: 100
+#          threshold: 3.0
+#          require_reset: true
+#      - name: MediumTrack
+#        value: 1.0
+#        completion_criteria:
+#          measure: reward
+#          behavior: ShipBehavior
+#          min_lesson_length: 100
+#          threshold: 5.0
+#          require_reset: true
+#      - name: DefaultTrack
+#        value: 2.0
 env_settings:
   env_path: "Builds/Windows/Rocket Man"
   num_envs: 1

@@ -37,7 +37,8 @@ namespace FearIndigo.Ship
         [Header("AI")]
         public float stepPunishment = -0.0005f;
         public float crashedPunishment = -1f;
-        public float checkpointReward = 1f;
+        public float allCheckpointsReward = 1f;
+        public float finishLineReward = 1f;
         public int maxStepsBetweenCheckpoints;
         public float pFactor = 2f;
         public float maxVelocityObservation = 80f;
@@ -249,9 +250,17 @@ namespace FearIndigo.Ship
         /// <summary>
         /// Set reward and reset _stepsSinceLastCheckpoint.
         /// </summary>
-        public void CheckpointAcquired()
+        public void CheckpointAcquired(bool isFinishLine = false)
         {
-            SetReward(checkpointReward);
+            if (isFinishLine)
+            {
+                SetReward(finishLineReward);
+            }
+            else
+            {
+                SetReward(allCheckpointsReward / (_gameManager.checkpointManager.checkpoints.Count - 1));
+            }
+            
             _stepsSinceLastCheckpoint = 0;
         }
 
