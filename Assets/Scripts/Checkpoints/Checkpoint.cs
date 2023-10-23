@@ -23,18 +23,23 @@ namespace FearIndigo.Checkpoints
         /// <param name="endPoint"></param>
         public void UpdateLine(float2 startPoint, float2 endPoint)
         {
+            var direction = (Vector2)math.normalize(endPoint - startPoint);
+            var radius = colliderWidth / 2f;
+            var adjustedStart = new Vector2(startPoint.x, startPoint.y) + direction * radius;
+            var adjustedEnd = new Vector2(endPoint.x, endPoint.y) - direction * radius;
             lineRenderer.widthMultiplier = colliderWidth;
             lineRenderer.positionCount = 2;
-            lineRenderer.SetPositions(new[]
+            lineRenderer.SetPositions(new Vector3[]
             {
-                new Vector3(startPoint.x, startPoint.y, 0),
-                new Vector3(endPoint.x, endPoint.y, 0)
+                adjustedStart,
+                adjustedEnd
             });
-            edgeCollider.edgeRadius = colliderWidth / 2f;
+            
+            edgeCollider.edgeRadius = radius;
             edgeCollider.SetPoints(new List<Vector2>()
             {
-                new Vector2(startPoint.x, startPoint.y),
-                new Vector2(endPoint.x, endPoint.y)
+                adjustedStart,
+                adjustedEnd
             });
         }
         

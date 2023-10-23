@@ -15,6 +15,10 @@ namespace FearIndigo.Managers
         public void Reset()
         {
             shipCheckpointSplits.Clear();
+            foreach (var ship in GameManager.shipManager.ships)
+            {
+                shipCheckpointSplits.Add(ship, new Dictionary<int, float>());
+            }
             timer = 0;
             OnCheckpointSplitsUpdated?.Invoke();
         }

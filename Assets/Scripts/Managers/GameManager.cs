@@ -42,11 +42,11 @@ namespace FearIndigo.Managers
             if (Academy.Instance.IsCommunicatorOn)
                 trackManager.trackConfigIndex = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("track_config_index", trackManager.trackConfigIndex);
             
-            timerManager.Reset();
             if(randomSeedOnReset) trackManager.RandomizeSeed();
             trackManager.GenerateTrack();
             checkpointManager.CreateCheckpoints();
             shipManager.SpawnShips();
+            timerManager.Reset();
             cameraManager.SetCameraTarget(shipManager.MainShip?.transform);
         }
     }
