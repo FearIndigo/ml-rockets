@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace FearIndigo.Sensors
 {
@@ -12,6 +13,9 @@ namespace FearIndigo.Sensors
         [Header("Sensor")]
         public CustomRenderTextureSensorComponent sensor;
         public float pixelWidth = 1.5f;
+
+        [Header("Debug")]
+        public RawImage rawImage;
         
         private Camera _camera;
 
@@ -22,6 +26,8 @@ namespace FearIndigo.Sensors
             _camera.orthographicSize = pixelWidth * (sensor.TextureSize.x / 2f);
             _camera.targetTexture = sensor.RenderTexture;
 
+            if(rawImage) rawImage.texture = sensor.RenderTexture;
+            
             transform.parent = null;
             transform.rotation = Quaternion.identity;
             

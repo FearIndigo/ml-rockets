@@ -37,6 +37,7 @@ namespace FearIndigo.Ship
         [Header("AI")]
         public float stepPunishment = -0.0005f;
         public float crashedPunishment = -1f;
+        public float maxEpisodeStepPunishment = -1f;
         public float allCheckpointsReward = 1f;
         public float finishLineReward = 1f;
         public int maxStepsBetweenCheckpoints;
@@ -100,27 +101,30 @@ namespace FearIndigo.Ship
         /// <param name="sensor">The vector observations for the agent.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            // Ship velocity (2 float)
-            sensor.AddObservation(Normalize(velocity, maxVelocityObservation));
+            // Ship velocity (3 float)
+            sensor.AddObservation(velocity.normalized);
+            sensor.AddObservation(Normalize(velocity.magnitude, maxVelocityObservation));
             // Ship angular velocity (1 float)
             sensor.AddObservation(Normalize(angularVelocity, maxAngularVelocityObservation));
-            // Ship orientation (1 float)
-            sensor.AddObservation(NormalizeRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Active checkpoint -1 direction (2 float)
-            sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
-            // Active checkpoint observation (3 float)
+            // Ship orientation (2 float)
+            sensor.AddObservation((Vector2)(Quaternion.Euler(0,0,rb.rotation) * Vector3.up));
+            // Active checkpoint -1 direction (3 float)
+            var direction = _gameManager.checkpointManager.GetCheckpointDirection(this, -1);
+            sensor.AddObservation(direction.normalized);
+            sensor.AddObservation(Normalize(direction.magnitude, maxDistanceObservation));
+            // Active checkpoint observation (4 float)
             ObserveCheckpointAhead(0, sensor);
-            // Active checkpoint +1 observation (3 float)
+            // Active checkpoint +1 observation (4 float)
             ObserveCheckpointAhead(+1, sensor);
-            // Active checkpoint +2 observation (3 float)
+            // Active checkpoint +2 observation (4 float)
             ObserveCheckpointAhead(+2, sensor);
 
-            // 15 total
+            // 21 total
         }
 
         /// <summary>
         /// <para>
-        /// Observe if checkpoint is finish line and direction to checkpoint.
+        /// Observe if checkpoint is finish line, direction to checkpoint and distance to checkpoint.
         /// </para>
         /// </summary>
         /// <param name="activeCheckpointOffset"></param>
@@ -128,9 +132,11 @@ namespace FearIndigo.Ship
         private void ObserveCheckpointAhead(int activeCheckpointOffset, VectorSensor sensor)
         {
             sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, activeCheckpointOffset) is FinishLine);
-            sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
+            var direction = _gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset);
+            sensor.AddObservation(direction.normalized);
+            sensor.AddObservation(Normalize(direction.magnitude, maxDistanceObservation));
             
-            // 3 Total
+            // 4 Total
         }
 
         private float NormalizeRotation(float input)
@@ -217,7 +223,8 @@ namespace FearIndigo.Ship
             _stepsSinceLastCheckpoint++;
             if (Academy.Instance.IsCommunicatorOn && _stepsSinceLastCheckpoint > maxStepsBetweenCheckpoints)
             {
-                EpisodeInterrupted();
+                SetReward(maxEpisodeStepPunishment);
+                EndEpisode();
                 _gameManager.Reset();
             }
         }
