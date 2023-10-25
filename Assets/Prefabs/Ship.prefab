@@ -5571,9 +5571,8 @@ MonoBehaviour:
   humanColor: {r: 1, g: 1, b: 1, a: 1}
   crashedAudioEvent: {fileID: 11400000, guid: 4e7ef3fbe950c894cbe4bea76063b5f1, type: 2}
   thrustAudio: {fileID: 11400000, guid: 1ef6571c373256c4f9284be3a740b4c5, type: 2}
-  stepPunishment: -0.0005
+  stepPunishment: -0.001
   crashedPunishment: -1
-  maxEpisodeStepPunishment: -1
   allCheckpointsReward: 1
   finishLineReward: 1
   maxStepsBetweenCheckpoints: 500
@@ -5629,7 +5628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 21
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0
