@@ -109,7 +109,7 @@ namespace FearIndigo.Ship
             // Ship angular velocity (1 float)
             sensor.AddObservation(Normalize(angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
-            sensor.AddObservation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z);
+            sensor.AddObservation(NormalizeRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
             // Active checkpoint -1 direction (2 float)
             sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
             // Active checkpoint observation (3 float)

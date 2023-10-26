@@ -2,7 +2,7 @@
   "dependencies": {
     "com.unity.cinemachine": "2.9.7",
     "com.unity.feature.2d": "2.0.0",
-    "com.unity.ide.rider": "3.0.25",
+    "com.unity.ide.rider": "3.0.26",
     "com.unity.ml-agents": "file:D:/FearIndigo/Games/ml-agents/com.unity.ml-agents",
     "com.unity.render-pipelines.universal": "14.0.8",
     "com.unity.test-framework": "1.1.33",
