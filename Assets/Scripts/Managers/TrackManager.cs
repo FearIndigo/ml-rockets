@@ -1,6 +1,7 @@
 using System;
 using FearIndigo.Track;
 using Unity.Mathematics;
+using Unity.MLAgents;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -56,9 +57,11 @@ namespace FearIndigo.Managers
         public void GenerateTrack()
         {
             if (randomConfig)
-            {
                 trackConfigIndex = Random.Range(0, trackConfigs.Length);
-            }
+            
+            if (Academy.Instance.IsCommunicatorOn)
+                trackConfigIndex = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("track_config_index", trackConfigIndex);
+            
             TrackConfig.data.seed = seed;
             TrackBuilder.GenerateTrack(ref TrackConfig.data, out var newPoints, out var newWidths);
             trackSpline.UpdateTrack(newPoints, newWidths);

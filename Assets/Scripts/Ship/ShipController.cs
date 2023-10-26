@@ -84,6 +84,10 @@ namespace FearIndigo.Ship
         public override void OnEpisodeBegin()
         {
             _stepsSinceLastCheckpoint = 0;
+
+            stepPunishment = Academy.Instance.IsCommunicatorOn
+                ? Academy.Instance.EnvironmentParameters.GetWithDefault("step_punishment", stepPunishment)
+                : stepPunishment;
         }
 
         private GameObject GetRaySensorDetectableObject()
@@ -211,10 +215,10 @@ namespace FearIndigo.Ship
             
             rb.MovePosition(rb.position + velocity * deltaTime);
             rb.MoveRotation(rb.rotation + angularVelocity * deltaTime);
+
+            AddReward(stepPunishment);
             
             _stepsSinceLastCheckpoint++;
-            AddReward(stepPunishment * ((float)_stepsSinceLastCheckpoint / maxStepsBetweenCheckpoints));
-            
             if (Academy.Instance.IsCommunicatorOn && _stepsSinceLastCheckpoint >= maxStepsBetweenCheckpoints)
             {
                 EpisodeInterrupted();

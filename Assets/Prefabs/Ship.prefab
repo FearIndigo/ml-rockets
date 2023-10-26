@@ -5571,7 +5571,7 @@ MonoBehaviour:
   humanColor: {r: 1, g: 1, b: 1, a: 1}
   crashedAudioEvent: {fileID: 11400000, guid: 4e7ef3fbe950c894cbe4bea76063b5f1, type: 2}
   thrustAudio: {fileID: 11400000, guid: 1ef6571c373256c4f9284be3a740b4c5, type: 2}
-  stepPunishment: -0.001
+  stepPunishment: -0.0005
   crashedPunishment: -1
   allCheckpointsReward: 1
   finishLineReward: 1
