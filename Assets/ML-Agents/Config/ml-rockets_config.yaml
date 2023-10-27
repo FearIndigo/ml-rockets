@@ -16,24 +16,25 @@ behaviors:
       normalize: false
       hidden_units: 512
       num_layers: 3
-      vis_encode_type: nature_cnn
+      vis_encode_type: simple
     reward_signals:
       extrinsic:
         gamma: 0.995
         strength: 2.0
       gail:
         gamma: 0.99
-        strength: 0.01
+        strength: 0.05
         learning_rate: 0.0002
-        use_actions: false
-        use_vail: true
+        use_actions: true
+        use_vail: false
         demo_path: Assets/ML-Agents/Demonstrations/ShipBehaviorDemo.demo
         network_settings:
-          vis_encode_type: nature_cnn
+          hidden_units: 256
+          vis_encode_type: simple
     threaded: true
     keep_checkpoints: 5
-    max_steps: 15000000
-    time_horizon: 512
+    max_steps: 200000000
+    time_horizon: 256
     summary_freq: 30000
 environment_parameters:
   track_config_index:
@@ -52,7 +53,7 @@ environment_parameters:
           measure: reward
           behavior: ShipBehavior
           min_lesson_length: 1000
-          threshold: 0.3
+          threshold: 0.5
           require_reset: true
       - name: DefaultTrack
         value: 2.0
@@ -65,6 +66,14 @@ environment_parameters:
           behavior: ShipBehavior
           min_lesson_length: 1000
           threshold: 0.5
+          require_reset: true
+      - name: SmallPunishment
+        value: -0.0001
+        completion_criteria:
+          measure: reward
+          behavior: ShipBehavior
+          min_lesson_length: 1000
+          threshold: 1.0
           require_reset: true
       - name: Punishment
         value: -0.0005

@@ -364,7 +364,7 @@ MonoBehaviour:
   target: {fileID: 6718346088288863038}
   targetOffset: {x: 0, y: 0, z: -5}
   sensor: {fileID: 4442577925806857405}
-  pixelWidth: 1
+  pixelWidth: 0.6
   rawImage: {fileID: 0}
 --- !u!1 &4739967667532397703
 GameObject:
@@ -5573,10 +5573,10 @@ MonoBehaviour:
   thrustAudio: {fileID: 11400000, guid: 1ef6571c373256c4f9284be3a740b4c5, type: 2}
   stepPunishment: -0.0005
   crashedPunishment: -1
-  allCheckpointsReward: 1
+  allCheckpointsReward: 2
   finishLineReward: 1
-  maxStepsBetweenCheckpoints: 500
-  pFactor: 3
+  maxStepsBetweenCheckpoints: 512
+  pFactor: 2
   maxVelocityObservation: 100
   maxAngularVelocityObservation: 400
   maxDistanceObservation: 150
@@ -5597,7 +5597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 20000
+  NumStepsToRecord: 25000
   DemonstrationName: ShipBehaviorDemo
   DemonstrationDirectory: Assets/ML-Agents/Demonstrations
 --- !u!114 &1364552334375913673
