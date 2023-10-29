@@ -4,7 +4,7 @@ behaviors:
     hyperparameters:
       learning_rate: 0.0002
       learning_rate_schedule: constant
-      batch_size: 512
+      batch_size: 128
       buffer_size: 2000000
       buffer_init_steps: 5000
       tau: 0.005
@@ -14,7 +14,7 @@ behaviors:
       reward_signal_steps_per_update: 16.0
     network_settings:
       normalize: false
-      hidden_units: 512
+      hidden_units: 256
       num_layers: 3
       vis_encode_type: simple
     reward_signals:
