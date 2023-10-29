@@ -88,6 +88,10 @@ namespace FearIndigo.Ship
             stepPunishment = Academy.Instance.IsCommunicatorOn
                 ? Academy.Instance.EnvironmentParameters.GetWithDefault("step_punishment", stepPunishment)
                 : stepPunishment;
+            
+            allCheckpointsReward = Academy.Instance.IsCommunicatorOn
+                ? Academy.Instance.EnvironmentParameters.GetWithDefault("all_checkpoints_reward", allCheckpointsReward)
+                : allCheckpointsReward;
         }
 
         private GameObject GetRaySensorDetectableObject()
@@ -221,6 +225,7 @@ namespace FearIndigo.Ship
             _stepsSinceLastCheckpoint++;
             if (Academy.Instance.IsCommunicatorOn && _stepsSinceLastCheckpoint >= maxStepsBetweenCheckpoints)
             {
+                SetReward(_gameManager.checkpointManager.GetActiveCheckpointId(this) / (float) _gameManager.checkpointManager.checkpoints.Count - 1f);
                 EpisodeInterrupted();
                 _gameManager.Reset();
             }
@@ -262,7 +267,7 @@ namespace FearIndigo.Ship
             }
             else
             {
-                SetReward(allCheckpointsReward / (_gameManager.checkpointManager.checkpoints.Count - 1));
+                SetReward(allCheckpointsReward / (_gameManager.checkpointManager.checkpoints.Count - 1f));
             }
             
             _stepsSinceLastCheckpoint = 0;

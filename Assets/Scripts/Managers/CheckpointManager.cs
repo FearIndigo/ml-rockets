@@ -43,13 +43,11 @@ namespace FearIndigo.Managers
 
             var trackManager = GameManager.trackManager;
             var positions = trackManager.GetCentreSplinePoints();
-            var widths = trackManager.GetWidths();
             for (var i = 0; i < positions.Length - 1; i++)
             {
                 var checkpoint = Instantiate(checkpointPrefab, transform);
                 var posIndex = i + 1;
                 var position = positions[posIndex];
-                var t = posIndex / (float) positions.Length;
                 checkpoint.Init(i, position);
                 checkpoint.UpdateLine(trackManager.trackSpline.leftSpline.points[posIndex] - position, trackManager.trackSpline.rightSpline.points[posIndex] - position);
                 checkpoints.Add(checkpoint);
