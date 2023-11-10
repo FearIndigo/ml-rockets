@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using FearIndigo.Audio;
 using FearIndigo.Checkpoints;
 using FearIndigo.Managers;
@@ -20,6 +22,9 @@ namespace FearIndigo.Ship
         public float angularThrust;
         public float drag;
         public float angularDrag;
+        public int numCollisionPoints;
+        public float collisionRadius;
+        public LayerMask collisionLayerMask;
 
         [Header("Graphics")]
         public SpriteRenderer spriteRenderer;
@@ -77,7 +82,10 @@ namespace FearIndigo.Ship
         {
             index = shipIndex;
             enabled = true;
+            _stepsSinceLastCheckpoint = 0;
             _crashed = false;
+            velocity = Vector2.zero;
+            angularVelocity = 0f;
             
             _behaviorParameters.BehaviorType = useHeuristics ? BehaviorType.HeuristicOnly : BehaviorType.Default;
 
@@ -90,8 +98,6 @@ namespace FearIndigo.Ship
         
         public override void OnEpisodeBegin()
         {
-            _stepsSinceLastCheckpoint = 0;
-
             stepPunishment = Academy.Instance.IsCommunicatorOn
                 ? Academy.Instance.EnvironmentParameters.GetWithDefault("step_punishment", stepPunishment)
                 : stepPunishment;
@@ -230,6 +236,29 @@ namespace FearIndigo.Ship
                 EpisodeInterrupted();
                 _gameManager.Reset();
             }
+            
+            TrackCollisionCheck();
+        }
+
+        private void TrackCollisionCheck()
+        {
+            if (GetCollisionPoints().Any(point => !Physics2D.OverlapPoint(point, collisionLayerMask)))
+            {
+                Crashed();
+            }
+        }
+
+        private List<Vector2> GetCollisionPoints()
+        {
+            var origin = rb ? rb.position : (Vector2)transform.position;
+            var points = new List<Vector2>();
+            for (var i = 0; i < numCollisionPoints; i++)
+            {
+                var angle = i / (float)numCollisionPoints * Mathf.PI * 2f;
+                var pos = origin + new Vector2(collisionRadius * Mathf.Cos(angle), collisionRadius * Mathf.Sin(angle));
+                points.Add(pos);
+            }
+            return points;
         }
 
         public void PlayThrust(bool play)
@@ -280,11 +309,11 @@ namespace FearIndigo.Ship
         public void Crashed()
         {
             if(_crashed) return;
-            
+            _crashed = true;
+
             crashedAudioEvent.Play(transform.position);
             SetReward(crashedPunishment);
             StopShip();
-            _crashed = true;
         }
 
         /// <summary>
@@ -315,6 +344,17 @@ namespace FearIndigo.Ship
             angularVelocity = 0f;
             trail.Clear();
             thrustParticles.Clear();
+        }
+
+        private void OnDrawGizmos()
+        {
+            var preCol = Gizmos.color;
+            foreach (var point in GetCollisionPoints())
+            {
+                Gizmos.color = Physics2D.OverlapPoint(point, collisionLayerMask) ? Color.white : Color.red;
+                Gizmos.DrawWireSphere(point, 0.015f);
+            }
+            Gizmos.color = preCol;
         }
     }
 }
