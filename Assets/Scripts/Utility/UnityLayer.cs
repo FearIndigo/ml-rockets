@@ -8,7 +8,14 @@ namespace FearIndigo.Utility
     {
         public int layerIndex;
 
+        public UnityLayer(int layerIndex)
+        {
+            this.layerIndex = layerIndex;
+        }
+        
+        public int LayerMask => 1 << layerIndex;
+
         public static implicit operator int(UnityLayer unityLayer) => unityLayer.layerIndex;
-        public static implicit operator LayerMask(UnityLayer unityLayer) => (1 << unityLayer);
+        public static implicit operator LayerMask(UnityLayer unityLayer) => unityLayer.LayerMask;
     }
 }

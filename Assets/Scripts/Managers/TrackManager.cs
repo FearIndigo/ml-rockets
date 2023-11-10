@@ -1,5 +1,6 @@
 using System;
 using FearIndigo.Track;
+using FearIndigo.Utility;
 using Unity.Mathematics;
 using Unity.MLAgents;
 using UnityEngine;
@@ -59,7 +60,7 @@ namespace FearIndigo.Managers
             if (randomConfig)
                 trackConfigIndex = Random.Range(0, trackConfigs.Length);
             
-            if (Academy.Instance.IsCommunicatorOn)
+            if (Application.isPlaying && Academy.Instance.IsCommunicatorOn)
                 trackConfigIndex = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("track_config_index", trackConfigIndex);
             
             TrackConfig.data.seed = seed;

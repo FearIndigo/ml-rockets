@@ -26,12 +26,13 @@ namespace FearIndigo.Sensors.Editor
             }
             EditorGUI.EndDisabledGroup();
 
-            EditorGUILayout.PropertyField(so.FindProperty("m_AgentRigidbody"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_MaxRayDegrees"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_SphereCastRadius"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_RayLength"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_RaycastHitBufferSize"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_RayLayerMask"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_LayerMaskTest"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_AgentRigidbody"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_DetectableObjects"), true);
 
             // Because the number of observation stacks affects the observation shape,
             // it is not editable during play mode.
@@ -40,17 +41,6 @@ namespace FearIndigo.Sensors.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), new GUIContent("Stacked Raycasts"), true);
             }
             EditorGUI.EndDisabledGroup();
-
-            if (is3d)
-            {
-                EditorGUILayout.PropertyField(so.FindProperty("m_StartVerticalOffset"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
-            }
-            
-            if (is3d)
-            {
-                EditorGUILayout.PropertyField(so.FindProperty("m_UseBatchedRaycasts"), true);
-            }
 
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);
@@ -69,14 +59,14 @@ namespace FearIndigo.Sensors.Editor
         {
             if (m_RequireSensorUpdate)
             {
-                var sensorComponent = serializedObject.targetObject as CustomRayPerceptionSensorComponentBase;
+                var sensorComponent = serializedObject.targetObject as CustomRayPerceptionSensor2DComponent;
                 sensorComponent?.UpdateSensor();
                 m_RequireSensorUpdate = false;
             }
         }
     }
 
-    [CustomEditor(typeof(CustomRayPerceptionSensorComponent2D), editorForChildClasses: true)]
+    [CustomEditor(typeof(CustomRayPerceptionSensor2DComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class CustomRayPerceptionSensorComponent2DEditor : CustomRayPerceptionSensorComponentBaseEditor
     {
@@ -85,14 +75,4 @@ namespace FearIndigo.Sensors.Editor
             OnRayPerceptionInspectorGUI(false);
         }
     }
-
-    // [CustomEditor(typeof(CustomRayPerceptionSensorComponent3D), editorForChildClasses: true)]
-    // [CanEditMultipleObjects]
-    // internal class CustomRayPerceptionSensorComponent3DEditor : CustomRayPerceptionSensorComponentBaseEditor
-    // {
-    //     public override void OnInspectorGUI()
-    //     {
-    //         OnRayPerceptionInspectorGUI(true);
-    //     }
-    // }
 }

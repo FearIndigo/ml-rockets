@@ -39,22 +39,24 @@ namespace FearIndigo.Ship
         public float crashedPunishment = -1f;
         public float allCheckpointsReward = 1f;
         public float finishLineReward = 1f;
-        public int maxStepsBetweenCheckpoints;
-        public float pFactor = 2f;
-        public float maxVelocityObservation = 80f;
-        public float maxAngularVelocityObservation = 350f;
-        public float maxDistanceObservation = 200f;
-        public CustomRayPerceptionSensorComponent2D raySensor;
+        public int maxStepsBetweenCheckpoints = 512;
+        //public float pFactor = 2f;
+        public float maxVelocityObservation = 100f;
+        public float maxAngularVelocityObservation = 400f;
+        public float maxDistanceObservation = 150f;
+        public CustomRayPerceptionSensor2DComponent raySensor;
 
         private GameManager _gameManager;
         private BehaviorParameters _behaviorParameters;
         private int _stepsSinceLastCheckpoint;
         private AudioSource _thrustSource;
+        private GameObject[] _raySensorDetectableObjects;
+        private bool _crashed;
 
         [HideInInspector] public Vector2 velocity;
         [HideInInspector] public float angularVelocity;
         [HideInInspector] public Rigidbody2D rb;
-        
+
         protected override void Awake()
         {
             base.Awake();
@@ -64,13 +66,18 @@ namespace FearIndigo.Ship
             
             rb = GetComponent<Rigidbody2D>();
 
-            raySensor.DetectableObject = GetRaySensorDetectableObject;
+            raySensor.DetectableObjects = new[]
+            {
+                _gameManager.trackManager.trackSpline.trackMesh.leftEdge.gameObject,
+                _gameManager.trackManager.trackSpline.trackMesh.rightEdge.gameObject
+            };
         }
 
         public void Init(int shipIndex, bool useHeuristics)
         {
             index = shipIndex;
             enabled = true;
+            _crashed = false;
             
             _behaviorParameters.BehaviorType = useHeuristics ? BehaviorType.HeuristicOnly : BehaviorType.Default;
 
@@ -93,11 +100,6 @@ namespace FearIndigo.Ship
                 ? Academy.Instance.EnvironmentParameters.GetWithDefault("all_checkpoints_reward", allCheckpointsReward)
                 : allCheckpointsReward;
         }
-
-        private GameObject GetRaySensorDetectableObject()
-        {
-            return _gameManager.checkpointManager.GetCheckpoint(this, 0).gameObject;
-        }
         
         /// <summary>
         /// <para>
@@ -114,26 +116,24 @@ namespace FearIndigo.Ship
             sensor.AddObservation(Normalize(angularVelocity, maxAngularVelocityObservation));
             // Ship orientation (1 float)
             sensor.AddObservation(NormalizeRotation(Quaternion.Euler(0,0,rb.rotation).normalized.eulerAngles.z));
-            // Active checkpoint -1 direction (2 float)
-            sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, -1), maxDistanceObservation));
             // Active checkpoint observation (3 float)
-            ObserveCheckpointAhead(0, sensor);
+            ObserveCheckpoint(0, sensor);
             // Active checkpoint +1 observation (3 float)
-            ObserveCheckpointAhead(+1, sensor);
+            ObserveCheckpoint(+1, sensor);
             // Active checkpoint +2 observation (3 float)
-            ObserveCheckpointAhead(+2, sensor);
+            ObserveCheckpoint(+2, sensor);
 
-            // 15 total
+            // 13 total
         }
 
         /// <summary>
         /// <para>
-        /// Observe if checkpoint is finish line, direction to checkpoint and distance to checkpoint.
+        /// Observe if checkpoint is finish line and direction to checkpoint.
         /// </para>
         /// </summary>
         /// <param name="activeCheckpointOffset"></param>
         /// <param name="sensor"></param>
-        private void ObserveCheckpointAhead(int activeCheckpointOffset, VectorSensor sensor)
+        private void ObserveCheckpoint(int activeCheckpointOffset, VectorSensor sensor)
         {
             sensor.AddObservation(_gameManager.checkpointManager.GetCheckpoint(this, activeCheckpointOffset) is FinishLine);
             sensor.AddObservation(Normalize(_gameManager.checkpointManager.GetCheckpointDirection(this, activeCheckpointOffset), maxDistanceObservation));
@@ -148,7 +148,8 @@ namespace FearIndigo.Ship
 
         private float Normalize(float input, float max)
         {
-            return Mathf.Sign(input) * (1f - Mathf.Pow(1f - Mathf.Clamp01(Mathf.Abs(input) / max), pFactor));
+            //return Mathf.Sign(input) * (1f - Mathf.Pow(1f - Mathf.Clamp01(Mathf.Abs(input) / max), pFactor));
+            return Mathf.Clamp(input / max, -1f, 1f);
         }
 
         private Vector2 Normalize(Vector2 input, float max)
@@ -278,9 +279,12 @@ namespace FearIndigo.Ship
         /// </summary>
         public void Crashed()
         {
+            if(_crashed) return;
+            
             crashedAudioEvent.Play(transform.position);
             SetReward(crashedPunishment);
             StopShip();
+            _crashed = true;
         }
 
         /// <summary>

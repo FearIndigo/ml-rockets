@@ -14,9 +14,7 @@ namespace FearIndigo.Track
         public int resolution = 64;
 
         [Header("Track Mesh")]
-        public MeshFilter meshFilter;
-        public MeshFilter trackObservationMeshFilter;
-        public CustomCollider2D trackCollider;
+        public TrackMesh trackMesh;
         
         [HideInInspector] public Spline centreSpline;
         [HideInInspector] public Spline leftSpline;
@@ -109,13 +107,17 @@ namespace FearIndigo.Track
             var vertices = new Vector3[resolution * 2];
             var triangles = new int[resolution * 6];
             var shapeGroup = new PhysicsShapeGroup2D();
-            
+
+            var leftPoints = new List<Vector2>();
+            var rightPoints = new List<Vector2>();
             for (var i = 0; i < resolution; i++)
             {
                 // Vertices
                 var t0 = i / (float)resolution;
                 var left0 = leftSpline.GetCurve(t0);
                 var right0 = rightSpline.GetCurve(t0);
+                leftPoints.Add(left0);
+                rightPoints.Add(right0);
                 vertices[i * 2 + 0] = new Vector3(left0.x, left0.y, 0);
                 vertices[i * 2 + 1] = new Vector3(right0.x, right0.y, 0);
                 
@@ -141,6 +143,8 @@ namespace FearIndigo.Track
                     transform.TransformPoint((Vector2)right0)
                 });
             }
+            leftPoints.Add(leftPoints[0]);
+            rightPoints.Add(rightPoints[0]);
             
             _trackMesh.Clear();
             _trackMesh.vertices = vertices;
@@ -148,11 +152,10 @@ namespace FearIndigo.Track
             _trackMesh.RecalculateNormals();
             _trackMesh.RecalculateTangents();
             _trackMesh.Optimize();
-            meshFilter.sharedMesh = _trackMesh;
-            trackObservationMeshFilter.sharedMesh = _trackMesh;
-            
-            trackCollider.ClearCustomShapes();
-            trackCollider.SetCustomShapes(shapeGroup);
+
+            trackMesh.SetMesh(_trackMesh);
+            trackMesh.SetColliderShape(shapeGroup);
+            trackMesh.UpdateEdgeColliders(leftPoints, rightPoints);
         }
     }
 }
