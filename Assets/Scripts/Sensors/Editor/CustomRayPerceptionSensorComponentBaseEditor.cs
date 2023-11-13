@@ -26,6 +26,7 @@ namespace FearIndigo.Sensors.Editor
             }
             EditorGUI.EndDisabledGroup();
 
+            EditorGUILayout.PropertyField(so.FindProperty("m_InverseRaycast"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_MaxRayDegrees"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_SphereCastRadius"), true);
             EditorGUILayout.PropertyField(so.FindProperty("m_RayLength"), true);

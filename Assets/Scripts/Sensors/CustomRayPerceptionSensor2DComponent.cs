@@ -86,6 +86,19 @@ namespace FearIndigo.Sensors
             get => m_SphereCastRadius;
             set { m_SphereCastRadius = value; UpdateSensor(); }
         }
+        
+        [HideInInspector, SerializeField]
+        [Tooltip("Use inverse raycast.")]
+        bool m_InverseRaycast = false;
+
+        /// <summary>
+        /// Use inverse raycast.
+        /// </summary>
+        public bool InverseRaycast
+        {
+            get => m_InverseRaycast;
+            set { m_InverseRaycast = value; UpdateSensor(); }
+        }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("rayLength")]
         [Range(1, 1000)]
@@ -230,6 +243,7 @@ namespace FearIndigo.Sensors
             rayPerceptionInput.AgentRigidbody = AgentRigidbody;
             rayPerceptionInput.Angles = GetRayAngles(RaysPerDirection, MaxRayDegrees);
             rayPerceptionInput.CastRadius = SphereCastRadius;
+            rayPerceptionInput.InverseRaycast = InverseRaycast;
             rayPerceptionInput.LayerMask = RayLayerMask;
             rayPerceptionInput.LayerMaskTest = LayerMaskTest;
 

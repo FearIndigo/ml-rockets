@@ -220,6 +220,67 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &3960953072743016612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3588958746495895630}
+  - component: {fileID: 714428430588207758}
+  m_Layer: 0
+  m_Name: CheckpointCustomRayPerceptionSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3588958746495895630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3960953072743016612}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3816154931880567168}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &714428430588207758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3960953072743016612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb4c3986a8a4f4e449e5fb2e8c1a8d4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: CheckpointCustomRayPerceptionSensor
+  m_DetectableObjects: []
+  m_AgentRigidbody: {fileID: 6718346088288863038}
+  m_RaysPerDirection: 10
+  m_MaxRayDegrees: 171
+  m_SphereCastRadius: 0.2
+  m_InverseRaycast: 0
+  m_RayLength: 32
+  m_RayLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  m_LayerMaskTest:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ObservationStacks: 1
+  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
+  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &6182312635382448276
 GameObject:
   m_ObjectHideFlags: 0
@@ -5059,7 +5120,7 @@ GameObject:
   - component: {fileID: 8364896263622967443}
   - component: {fileID: 4222218645819810367}
   m_Layer: 0
-  m_Name: CustomRayPerceptionSensor
+  m_Name: BoundaryCustomRayPerceptionSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5092,12 +5153,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb4c3986a8a4f4e449e5fb2e8c1a8d4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: CustomRayPerceptionSensor
+  m_SensorName: BoundaryCustomRayPerceptionSensor
   m_DetectableObjects: []
   m_AgentRigidbody: {fileID: 6718346088288863038}
   m_RaysPerDirection: 10
   m_MaxRayDegrees: 171
   m_SphereCastRadius: 0.01
+  m_InverseRaycast: 1
   m_RayLength: 64
   m_RayLayerMask:
     serializedVersion: 2
@@ -5346,6 +5408,7 @@ Transform:
   - {fileID: 7128265737542502326}
   - {fileID: 8535762198776425898}
   - {fileID: 8364896263622967443}
+  - {fileID: 3588958746495895630}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5631927508277157399
@@ -5370,7 +5433,7 @@ MonoBehaviour:
   drag: 0.5
   angularDrag: 3
   numCollisionPoints: 8
-  collisionRadius: 0.25
+  collisionRadius: 0.23
   collisionLayerMask:
     serializedVersion: 2
     m_Bits: 512
@@ -5389,7 +5452,8 @@ MonoBehaviour:
   maxVelocityObservation: 100
   maxAngularVelocityObservation: 400
   maxDistanceObservation: 150
-  raySensor: {fileID: 4222218645819810367}
+  boundaryRaySensor: {fileID: 4222218645819810367}
+  checkpointRaySensor: {fileID: 714428430588207758}
   velocity: {x: 0, y: 0}
   angularVelocity: 0
   rb: {fileID: 0}
@@ -5437,7 +5501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 13
+    VectorObservationSize: 15
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 0

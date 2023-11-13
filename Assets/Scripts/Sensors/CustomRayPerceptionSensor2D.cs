@@ -42,6 +42,11 @@ namespace FearIndigo.Sensors
         public float CastRadius;
 
         /// <summary>
+        /// Use inverse raycast.
+        /// </summary>
+        public bool InverseRaycast;
+        
+        /// <summary>
         /// Filtering options for the casts.
         /// </summary>
         public int LayerMask;
@@ -331,8 +336,26 @@ namespace FearIndigo.Sensors
 
             // Do the cast and assign the hit information for each detectable tag.
             var hitFraction = 1.0f;
-            var castHit = InverseCast2D.Cast(startPositionWorld, castRadius, rayDirection, input.RayHits2D,
-                rayLength, input.LayerMask, input.LayerMaskTest);
+            var castHit = false;
+
+            if (input.InverseRaycast)
+            {
+                castHit = InverseCast2D.Cast(startPositionWorld, castRadius, rayDirection, input.RayHits2D,
+                    rayLength, input.LayerMask, input.LayerMaskTest);
+            }
+            else
+            {
+                if (castRadius > 0f)
+                {
+                    castHit = Physics2D.CircleCastNonAlloc(startPositionWorld, castRadius, rayDirection,
+                        input.RayHits2D, rayLength, input.LayerMask) > 0;
+                }
+                else
+                {
+                    castHit = Physics2D.RaycastNonAlloc(startPositionWorld, rayDirection,
+                        input.RayHits2D, rayLength, input.LayerMask) > 0;
+                }
+            }
             
             if (castHit && detectableObjects.Contains(input.RayHits2D[0].collider.gameObject))
             {

@@ -7,7 +7,6 @@ namespace FearIndigo.Checkpoints
         protected override void OnCheckpointAcquired(ShipController ship)
         {
             base.OnCheckpointAcquired(ship);
-            ship.CheckpointAcquired(true); // Can be called twice as SetReward() is used not AddReward()
             
             ship.StopShip();
         }

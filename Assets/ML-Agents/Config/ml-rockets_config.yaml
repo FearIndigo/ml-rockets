@@ -14,7 +14,7 @@ behaviors:
       reward_signal_steps_per_update: 16.0
     network_settings:
       normalize: false
-      hidden_units: 256
+      hidden_units: 512
       num_layers: 3
       deterministic: true
     reward_signals:
@@ -80,7 +80,7 @@ environment_parameters:
         value: -0.0005
   all_checkpoints_reward: 2.0
 env_settings:
-  env_path: "Builds/Windows/Rocket Man"
+  env_path: "Builds/Windows-Training/Rocket Man"
   num_envs: 1
   num_areas: 16
 engine_settings:

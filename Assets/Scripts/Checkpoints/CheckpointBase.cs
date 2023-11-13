@@ -81,7 +81,7 @@ namespace FearIndigo.Checkpoints
         {
             GameManager.checkpointManager.SetActiveCheckpoint(ship, checkpointId + 1);
             GameManager.timerManager.UpdateCheckpointSplit(ship, checkpointId);
-            ship.CheckpointAcquired();
+            ship.CheckpointAcquired(this);
 
             acquiredAudioEvent.Play(ship.transform.position);
         }
