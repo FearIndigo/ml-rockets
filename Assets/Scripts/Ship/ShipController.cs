@@ -23,6 +23,7 @@ namespace FearIndigo.Ship
         public float drag;
         public float angularDrag;
         public int numCollisionPoints;
+        public int collisionCheckFailedCount = 2;
         public float collisionRadius;
         public LayerMask collisionLayerMask;
 
@@ -256,7 +257,8 @@ namespace FearIndigo.Ship
 
         private void TrackCollisionCheck()
         {
-            if (GetCollisionPoints().Any(point => !Physics2D.OverlapPoint(point, collisionLayerMask)))
+            var count = GetCollisionPoints().Count(point => !Physics2D.OverlapPoint(point, collisionLayerMask));
+            if (count >= collisionCheckFailedCount)
             {
                 Crashed();
             }
