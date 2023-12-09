@@ -12,16 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c841e8a3f53488f8d43198b7310810c, type: 3}
   m_Name: Success
   m_EditorClassIdentifier: 
+  loop: 0
   spatialBlend: 1
   dopplerLevel: 0
   minMaxDistance:
     x: 10
     y: 100
   minMaxVolume:
-    x: 1
-    y: 1
+    x: 0.8
+    y: 0.8
   minMaxPitch:
-    x: 1.05
-    y: 1.05
+    x: 1
+    y: 1.1
   clips:
   - {fileID: 8300000, guid: d7f0cbc63b9abd2438028f5b2275fd30, type: 3}

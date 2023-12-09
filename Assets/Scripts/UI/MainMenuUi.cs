@@ -14,7 +14,7 @@ namespace FearIndigo.UI
         private void OnEnable()
         {
             container = UIHelper.Create("main-menu", "flex-column");
-            pressStartText = UIHelper.Create<TextElement>("Press Start", "press-start");
+            pressStartText = UIHelper.Create<TextElement>("Press Start (esc)", "press-start");
 
             mainSceneManager.uiDocument.rootVisualElement.Add(
                 container.Add(

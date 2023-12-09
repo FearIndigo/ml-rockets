@@ -25,7 +25,7 @@ namespace FearIndigo.Audio
                 AudioSourcePool.Release(source, source.clip.length / source.pitch);
         }
         
-        public override void Play(AudioSource source, Vector3 position)
+        public override void Play(AudioSource source, Vector3 position, float start = 0)
         {
             source.transform.position = position;
 
@@ -34,9 +34,11 @@ namespace FearIndigo.Audio
             source.dopplerLevel = dopplerLevel;
             source.minDistance = minMaxDistance.x;
             source.maxDistance = minMaxDistance.y;
-            source.clip = clips[Random.Range(0, clips.Count)];
+            var clip = clips[Random.Range(0, clips.Count)];
+            source.clip = clip;
             source.volume = Random.Range(minMaxVolume.x, minMaxVolume.y);
             source.pitch = Random.Range(minMaxPitch.x, minMaxPitch.y);
+            source.time = start * clip.length;
             
             source.Play();
         }

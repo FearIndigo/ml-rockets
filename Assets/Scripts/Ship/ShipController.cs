@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FearIndigo.Audio;
@@ -9,6 +10,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace FearIndigo.Ship
 {
@@ -80,6 +82,14 @@ namespace FearIndigo.Ship
             };
 
             checkpointRaySensor.DetectableObjects = new GameObject[1];
+        }
+
+        private void OnDestroy()
+        {
+            if (_thrustSource)
+            {
+                AudioSourcePool.Release(_thrustSource);
+            }
         }
 
         private void UpdateCheckpointSensor()
@@ -284,8 +294,8 @@ namespace FearIndigo.Ship
                 thrustParticles.Play();
                 if(!_thrustSource)
                     _thrustSource = AudioSourcePool.Get();
-                if (!_thrustSource.isPlaying)
-                    thrustAudio.Play(_thrustSource, transform.position);
+                if (!_thrustSource.isPlaying || _thrustSource.volume == 0f)
+                    thrustAudio.Play(_thrustSource, transform.position, Random.value);
                 else
                     _thrustSource.transform.position = transform.position;
             }
@@ -295,9 +305,7 @@ namespace FearIndigo.Ship
 
                 if (_thrustSource)
                 {
-                    _thrustSource.Stop();
-                    AudioSourcePool.Release(_thrustSource);
-                    _thrustSource = null;
+                    _thrustSource.volume = 0f;
                 }
             }
         }

@@ -19,8 +19,8 @@ MonoBehaviour:
     x: 10
     y: 100
   minMaxVolume:
-    x: 0.5
-    y: 0.5
+    x: 0.3
+    y: 0.3
   minMaxPitch:
     x: 1.4
     y: 1.4

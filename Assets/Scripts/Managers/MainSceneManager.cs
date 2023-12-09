@@ -13,6 +13,7 @@ namespace FearIndigo.Managers
         public CheckpointSplitsUi checkpointSplitsUi;
         public MainMenuUi mainMenuUi;
         public RandomSeedUi randomSeedUi;
+        public MusicUi musicUi;
 
         public bool menuIsOpen;
         public bool isPaused;
@@ -53,6 +54,7 @@ namespace FearIndigo.Managers
             checkpointSplitsUi.enabled = !open;
             mainMenuUi.enabled = open;
             randomSeedUi.enabled = open;
+            musicUi.enabled = open;
         }
 
         public void RoundOver()
