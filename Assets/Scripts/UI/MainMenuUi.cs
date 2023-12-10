@@ -9,12 +9,10 @@ namespace FearIndigo.UI
     {
         public MainSceneManager mainSceneManager;
         public VisualElement container;
-        public TextElement pressStartText;
 
         private void OnEnable()
         {
             container = UIHelper.Create("main-menu", "flex-column");
-            pressStartText = UIHelper.Create<TextElement>("Press Start (esc)", "press-start");
 
             mainSceneManager.uiDocument.rootVisualElement.Add(
                 container.Add(
@@ -22,10 +20,7 @@ namespace FearIndigo.UI
                     UIHelper.Create<Button>("Single Player", mainSceneManager.SetSinglePlayerMode, "button"),
                     UIHelper.Create<Button>("AI Only", mainSceneManager.SetAiOnlyMode, "button"),
                     UIHelper.Create<Button>("Human Vs AI", mainSceneManager.SetHumanVsAiMode, "button"),
-                    pressStartText));
-            
-            pressStartText.RegisterCallback<TransitionEndEvent>(evt => pressStartText.ToggleInClassList("scale-up"));
-            mainSceneManager.uiDocument.rootVisualElement.schedule.Execute(() => pressStartText.ToggleInClassList("scale-up")).StartingIn(100);
+                    UIHelper.Create<Button>("Start", () => mainSceneManager.OpenPauseMenu(false), "press-start", "button")));
         }
 
         private void OnDisable()

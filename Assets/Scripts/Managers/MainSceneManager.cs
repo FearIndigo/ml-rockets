@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FearIndigo.Ship;
 using FearIndigo.UI;
 using UnityEngine;
@@ -9,16 +10,15 @@ namespace FearIndigo.Managers
     {
         public GameManager gameManager;
         public UIDocument uiDocument;
-        public TimerUi timerUi;
-        public CheckpointSplitsUi checkpointSplitsUi;
-        public MainMenuUi mainMenuUi;
-        public RandomSeedUi randomSeedUi;
-        public MusicUi musicUi;
+
+        public List<MonoBehaviour> gameplayUis;
+        public List<MonoBehaviour> menuUis;
+        public MonoBehaviour continueButtonUi;
 
         public bool menuIsOpen;
         public bool isPaused;
         public bool roundOver;
-
+        
         private void Start()
         {
             OpenPauseMenu(menuIsOpen);
@@ -27,21 +27,13 @@ namespace FearIndigo.Managers
 
         public void LateUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
                 OpenPauseMenu(!menuIsOpen);
             }
-            else if (isPaused && !menuIsOpen && Input.anyKeyDown)
+            else if (isPaused && !roundOver && !menuIsOpen && Input.anyKeyDown)
             {
-                if (roundOver)
-                {
-                    roundOver = false;
-                    gameManager.Reset();
-                }
-                else
-                {
-                    SetPaused(false);
-                }
+                SetPaused(false);
             }
         }
 
@@ -50,17 +42,40 @@ namespace FearIndigo.Managers
             menuIsOpen = open;
             SetPaused(true);
 
-            timerUi.enabled = !open;
-            checkpointSplitsUi.enabled = !open;
-            mainMenuUi.enabled = open;
-            randomSeedUi.enabled = open;
-            musicUi.enabled = open;
+            foreach (var ui in gameplayUis)
+            {
+                ui.enabled = !open;
+            }
+
+            foreach (var ui in menuUis)
+            {
+                ui.enabled = open;
+            }
         }
 
-        public void RoundOver()
+        public void Continue()
+        {
+            SetRoundOver(false);
+            SetPaused(true);
+            gameManager.Reset();
+        }
+        
+        public void ResetCurrentTrack()
+        {
+            SetRoundOver(false);
+            SetPaused(true);
+            gameManager.ResetCurrent();
+        }
+
+        public void SetRoundOver(bool over = true)
         {
             SetPaused(true);
-            roundOver = true;
+            roundOver = over;
+            
+            if (!menuIsOpen)
+            {
+                continueButtonUi.enabled = over;
+            }
         }
         
         public void SetPaused(bool paused)

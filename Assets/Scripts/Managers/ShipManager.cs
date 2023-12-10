@@ -77,7 +77,7 @@ namespace FearIndigo.Managers
                 }
                 else
                 {
-                    FindObjectOfType<MainSceneManager>()?.RoundOver();
+                    FindObjectOfType<MainSceneManager>()?.SetRoundOver();
                 }
             }
             else

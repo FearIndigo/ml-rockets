@@ -201,7 +201,7 @@ namespace FearIndigo.Ship
             // Jump
             // 0 = nothing
             // 1 = up
-            discreteActionsOut[0] = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) ? 1 : 0;
+            discreteActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : 0;
 
             // Rotate
             // 0 = left

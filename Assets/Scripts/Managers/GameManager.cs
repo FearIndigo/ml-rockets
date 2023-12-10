@@ -44,6 +44,17 @@ namespace FearIndigo.Managers
             timerManager.Reset();
             cameraManager.SetCameraTarget(shipManager.MainShip?.transform);
         }
+
+        /// <summary>
+        /// Reset using the current seed.
+        /// </summary>
+        public void ResetCurrent()
+        {
+            checkpointManager.CreateCheckpoints();
+            shipManager.SpawnShips();
+            timerManager.Reset();
+            cameraManager.SetCameraTarget(shipManager.MainShip?.transform);
+        }
     }
 }
 

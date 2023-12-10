@@ -903,6 +903,8 @@ GameObject:
   - component: {fileID: 1892189401}
   - component: {fileID: 1892189402}
   - component: {fileID: 1892189403}
+  - component: {fileID: 1892189404}
+  - component: {fileID: 1892189405}
   m_Layer: 0
   m_Name: MainSceneManager
   m_TagString: Untagged
@@ -924,11 +926,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 1078183568}
   uiDocument: {fileID: 522768937}
-  timerUi: {fileID: 1892189400}
-  checkpointSplitsUi: {fileID: 1892189399}
-  mainMenuUi: {fileID: 1892189401}
-  randomSeedUi: {fileID: 1892189402}
-  musicUi: {fileID: 1892189403}
+  gameplayUis:
+  - {fileID: 1892189400}
+  - {fileID: 1892189399}
+  - {fileID: 1892189404}
+  - {fileID: 1892189405}
+  menuUis:
+  - {fileID: 1892189401}
+  - {fileID: 1892189402}
+  - {fileID: 1892189403}
+  continueButtonUi: {fileID: 1892189405}
   menuIsOpen: 1
   isPaused: 1
   roundOver: 0
@@ -1017,6 +1024,32 @@ MonoBehaviour:
   mainSceneManager: {fileID: 1892189397}
   musicAudioSource: {fileID: 762934145}
   musicEnabled: 1
+--- !u!114 &1892189404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892189396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa65895085ba4ff39e1815a614abefb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainSceneManager: {fileID: 1892189397}
+--- !u!114 &1892189405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892189396}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfa8f2a13aed0cf4cbe578be91944211, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainSceneManager: {fileID: 1892189397}
 --- !u!1 &2100016803
 GameObject:
   m_ObjectHideFlags: 0

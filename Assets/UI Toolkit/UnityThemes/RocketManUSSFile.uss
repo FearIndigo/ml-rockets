@@ -51,6 +51,19 @@
     color: white;
 }
 
+.open-menu{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.continue-button{
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    translate: -50% 0;
+}
+
 .splits-key{
     width: 50px;
     -unity-text-align: middle-right;
@@ -66,7 +79,9 @@
     background-color: #191919;
     color: white;
     height: 80px;
+    border-width: 4px;
     -unity-text-align: middle-center;
+    padding: 20px 30px 20px 30px;
 }
 
 .margin-right{
@@ -75,10 +90,6 @@
 
 .margin-bottom-small{
     margin-bottom: 5px;
-}
-
-.scale-up{
-    scale: 1.2 1.2;
 }
 
 .flex-row{
@@ -95,6 +106,4 @@
     color: white;
     height: 80px;
     -unity-text-align: middle-center;
-    transition-duration: 1s;
-    transition-timing-function: linear
 }
