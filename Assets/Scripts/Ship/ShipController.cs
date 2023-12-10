@@ -201,18 +201,18 @@ namespace FearIndigo.Ship
             // Jump
             // 0 = nothing
             // 1 = up
-            discreteActionsOut[0] = Input.GetKey(KeyCode.W) ? 1 : 0;
+            discreteActionsOut[0] = ShipInput.instance.thrust ? 1 : 0;
 
             // Rotate
             // 0 = left
             // 1 = nothing
             // 2 = right
             discreteActionsOut[1] = 1;
-            if (Input.GetKey(KeyCode.A))
+            if (ShipInput.instance.left)
             {
                 discreteActionsOut[1] -= 1;
             }
-            if (Input.GetKey(KeyCode.D))
+            if (ShipInput.instance.right)
             {
                 discreteActionsOut[1] += 1;
             }

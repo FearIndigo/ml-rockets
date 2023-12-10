@@ -1,4 +1,5 @@
 ﻿using FearIndigo.Managers;
+using FearIndigo.Ship;
 using FearIndigo.Utility;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -10,20 +11,27 @@ namespace FearIndigo.UI
         public MainSceneManager mainSceneManager;
         public AudioSource musicAudioSource;
         public VisualElement container;
-        public Toggle muteMusicToggle;
+        public Toggle enableMusicToggle;
+        public Toggle enableTouchControlsToggle;
         public bool musicEnabled = true;
         
         private void OnEnable()
         {
             container = UIHelper.Create("music-toggle");
 
-            muteMusicToggle = UIHelper.Create<Toggle>();
-            muteMusicToggle.label = "Enable Music";
-            muteMusicToggle.RegisterValueChangedCallback(OnToggleChanged);
-            muteMusicToggle.SetValueWithoutNotify(musicEnabled);
+            enableMusicToggle = UIHelper.Create<Toggle>();
+            enableMusicToggle.label = "Enable Music";
+            enableMusicToggle.RegisterValueChangedCallback(OnToggleChanged);
+            enableMusicToggle.SetValueWithoutNotify(musicEnabled);
 
+            enableTouchControlsToggle = UIHelper.Create<Toggle>();
+            enableTouchControlsToggle.label = "Enable Touch Controls";
+            enableTouchControlsToggle.RegisterValueChangedCallback(OnTouchToggleChanged);
+            enableTouchControlsToggle.SetValueWithoutNotify(ShipInput.instance.useTouchInput);
+            
             container.Add(
-                muteMusicToggle
+                enableMusicToggle,
+                enableTouchControlsToggle
             );
             
             mainSceneManager.uiDocument.rootVisualElement.Add(container);
@@ -31,7 +39,8 @@ namespace FearIndigo.UI
 
         private void OnDisable()
         {
-            muteMusicToggle.UnregisterValueChangedCallback(OnToggleChanged);
+            enableMusicToggle.UnregisterValueChangedCallback(OnToggleChanged);
+            enableTouchControlsToggle.UnregisterValueChangedCallback(OnTouchToggleChanged);
             
             mainSceneManager?.uiDocument?.rootVisualElement?.Remove(container);
         }
@@ -47,6 +56,11 @@ namespace FearIndigo.UI
             {
                 musicAudioSource.Stop();
             }
+        }
+        
+        private void OnTouchToggleChanged(ChangeEvent<bool> evt)
+        {
+            ShipInput.instance.useTouchInput = evt.newValue;
         }
     }
 }
